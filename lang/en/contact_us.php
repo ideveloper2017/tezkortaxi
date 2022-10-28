@@ -1,0 +1,27 @@
+<?php
+
+return array (
+  'complaint' => 'Complaint',
+  'head' => 'Let\'s get in touch!',
+  'para' => 'We\'d love to hear from you. Tell us a little about yourself and what type of question you have.',
+  'name' => 'Your Name',
+  'email' => 'Your Email',
+  'query' => 'Query for',
+  'please_select' => 'Please Select',
+  'message' => 'Message',
+  'enter_description' => 'Enter Your Description',
+  'send_message' => 'Send Message',
+  'contact_info' => 'Contact Info',
+  'call_us' => 'Call Us',
+  'chat' => 'Chat',
+  'email1' => 'Email',
+  'contact_us' => 'Contact Us',
+  'customer' => 'Customer Relationship',
+  'dispatcher' => 'Dispatcher Department',
+  'account' => 'Account Department',
+  'general' => 'General Support',
+  'description' => 'Description',
+  'our_workplace' => 'Our Workplace',
+  'contact_no' => 'Contact No',
+  'email_addr' => 'Email-Address',
+);

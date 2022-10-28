@@ -1,0 +1,14 @@
+#php_value max_input_vars 1000000000000000000
+#php_value memory_limit 4096M
+#php_value upload_max_filesize 4096M
+#php_value post_max_size 4096M
+#php_value max_execution_time 30000000000000
+#php_value max_input_time 10000000000000
+#php_value session.gc_maxlifetime 1200000000
+
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} !^public
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

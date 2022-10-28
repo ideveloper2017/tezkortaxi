@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Resource;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Country;
-use App\State;
-use App\City;
+use App\Models\Country;
+use App\Models\State;
+use App\Models\City;
 class LocationResource extends Controller
 {
     /**
@@ -18,7 +18,7 @@ class LocationResource extends Controller
     {
         //
     }
-    
+
     public function allCountry(){
         $countries = Country::all();
         return view('admin.location.countries',compact('countries'));
@@ -61,8 +61,8 @@ class LocationResource extends Controller
                         $state = new State;
                         $state->name = $request->state_name;
                         if($country->states()->save($state)){
-                            $this->saveCity($state,$request);     
-                        }      
+                            $this->saveCity($state,$request);
+                        }
                     }
                 }else{
                     $country = new Country;
@@ -72,12 +72,12 @@ class LocationResource extends Controller
                         $state = new State;
                         $state->name = $request->state_name;
                         if($country->states()->save($state)){
-                            $this->saveCity($state,$request); 
+                            $this->saveCity($state,$request);
                         }
-                    } 
+                    }
                 }
                 return back()->with('flash_success','Location Saved Successfully');
-            
+
         } catch (Exception $e) {
             return back()->with('flash_error', 'Something went wrong');
         }

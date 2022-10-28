@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Resource;
 
-use App\Promocode;
-use App\Zones;
-use App\PromocodeUsage;
+use App\Models\Promocode;
+use App\Models\Zones;
+use App\Models\PromocodeUsage;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Controller;
@@ -21,16 +21,16 @@ class PromocodeResource extends Controller
         $promocodes = Promocode::orderBy('created_at' , 'desc')->get();
         return view('admin.promocode.index', compact('promocodes'));
     }
-    
+
     public function getPromoCodes(){
         return Promocode::orderBy('created_at' , 'desc')->get();
     }
-    
+
     public function userPromoCode(){
         $promocodes = Promocode::orderBy('created_at' , 'desc')->get();
         return view('admin.promocode.users', compact('promocodes'));
     }
-    
+
     public function getPromocodeUser(Request $request){
         return PromocodeUsage::where('promocode_id', $request->promocode_id)->with('promocode','promouser')->get();
     }
@@ -69,7 +69,7 @@ class PromocodeResource extends Controller
             Promocode::create($request->all());
             return back()->with('flash_success','Promocode Saved Successfully');
 
-        } 
+        }
 
         catch (ModelNotFoundException $e) {
             return back()->with('flash_error', 'Promocode Not Found');
@@ -131,8 +131,8 @@ class PromocodeResource extends Controller
             $promo->expiration = $request->expiration;
             $promo->save();
 
-            return redirect()->route('admin.promocode.index')->with('flash_success', 'Promocode Updated Successfully');    
-        } 
+            return redirect()->route('admin.promocode.index')->with('flash_success', 'Promocode Updated Successfully');
+        }
 
         catch (ModelNotFoundException $e) {
             return back()->with('flash_error', 'Promocode Not Found');
@@ -150,7 +150,7 @@ class PromocodeResource extends Controller
         try {
             Promocode::find($id)->delete();
             return back()->with('message', 'Promocode deleted successfully');
-        } 
+        }
         catch (ModelNotFoundException $e) {
             return back()->with('flash_error', 'Promocode Not Found');
         }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Resource;
 
-use App\Document;
+use App\Models\Document;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -18,7 +18,7 @@ class DocumentResource extends Controller
      */
     public function index()
     {
-        
+
         $documents = Document::orderBy('created_at' , 'desc')->get();
         return view('admin.document.index', compact('documents'));
     }
@@ -44,7 +44,7 @@ class DocumentResource extends Controller
         if(Setting::get('demo_mode', 0) == 1) {
             return back()->with('flash_error', 'Disabled for demo purposes! Please contact us at info@rommoz.com');
         }
-        
+
         $this->validate($request, [
             'name' => 'required|max:255',
             'type' => 'required|in:VEHICLE,DRIVER',
@@ -55,7 +55,7 @@ class DocumentResource extends Controller
             Document::create($request->all());
             return redirect()->route('admin.document.index')->with('flash_success','Document Saved Successfully');
 
-        } 
+        }
 
         catch (Exception $e) {
             return back()->with('flash_error', 'Document Not Found');
@@ -113,8 +113,8 @@ class DocumentResource extends Controller
                     'type' => $request->type,
                     'expire'=> $request->expire,
                 ]);
-            return redirect()->route('admin.document.index')->with('flash_success', 'Document Updated Successfully');    
-        } 
+            return redirect()->route('admin.document.index')->with('flash_success', 'Document Updated Successfully');
+        }
 
         catch (Exception $e) {
             return back()->with('flash_error', 'Document Not Found');
@@ -135,7 +135,7 @@ class DocumentResource extends Controller
         try {
             Document::find($id)->delete();
             return back()->with('message', 'Document deleted successfully');
-        } 
+        }
         catch (Exception $e) {
             return back()->with('flash_error', 'Document Not Found');
         }

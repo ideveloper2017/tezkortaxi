@@ -4,7 +4,7 @@
 |--------------------------------------------------------------------------
 | Admin Routes
 |--------------------------------------------------------------------------
-*/ 
+*/
 
 Route::get('/', 'AdminController@dashboard')->name('index');
 Route::get('/notification', 'AdminController@notification')->name('notification');
@@ -57,7 +57,8 @@ Route::resource('provider', 'Resource\ProviderResource');
 Route::resource('document', 'Resource\DocumentResource');
 Route::resource('service', 'Resource\ServiceResource');
 Route::resource('blog', 'Resource\BlogAdminResource');
-Route::resource('allocation', 'Resource\ServiceResource@allocation');
+//Route::resource('allocation', 'Resource\ServiceResource@allocation');
+Route::get('allocation', 'Resource\ServiceResource@allocation');
 Route::post('service_update/{id}', 'AdminController@service_update')->name('update');
 
 Route::get('faresettings', 'AdminController@fare_settings')->name('fare_settings');
@@ -78,8 +79,8 @@ Route::get('new_withdraw', 'Resource\BankResource@new_withdraw');
 Route::get('approved_withdraw', 'Resource\BankResource@approved_withdraw');
 Route::get('disapproved_withdraw', 'Resource\BankResource@disapproved_withdraw');
 
-Route::resource('faqs', 'Resource\AdminFaqResource');    
-Route::resource('how-it-work', 'Resource\AdminHowitWorkResource');    
+Route::resource('faqs', 'Resource\AdminFaqResource');
+Route::resource('how-it-work', 'Resource\AdminHowitWorkResource');
 Route::resource('page', 'Resource\PageAdminResource');
 Route::resource('cms-manager', 'Resource\CmsResource');
 Route::resource('support-manager', 'Resource\SupportResource');
@@ -112,7 +113,7 @@ Route::group(['as' => 'provider.'], function () {
 	Route::post('provider/{provider}/document/{document}/upload', 'Resource\ProviderDocumentResource@provider_document_upload');
 	Route::get('provider/{provider}/document/{document}/update', 'Resource\ProviderDocumentResource@edit_provider_document_upload');
 	Route::post('provider/{provider}/document/{document}/update', 'Resource\ProviderDocumentResource@update_provider_document_upload');
-	
+
 });
 
 Route::get('review/user', 'AdminController@user_review')->name('user.review');

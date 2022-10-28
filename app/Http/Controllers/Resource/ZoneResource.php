@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Resource;
 
-use App\Zones;
+use App\Models\Zones;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Setting;
-use App\City;
-use App\Country;
-use App\State;
+use App\Models\City;
+use App\Models\Country;
+use App\Models\State;
 class ZoneResource extends Controller
 {
     /**
@@ -22,7 +22,7 @@ class ZoneResource extends Controller
     public function index(Request $request)
     {
 	    $zones = Zones::orderBy('created_at' , 'desc')->get();
-	   
+
         return view('admin.zone.index', compact('zones'));
     }
 
@@ -33,7 +33,7 @@ class ZoneResource extends Controller
      */
     public function create()
     {
-		
+
 		$all_zones = $this->makeZoesArray();
 		//$country = Country::where('id',101)->with('states')->get();
         return view('admin.zone.create', compact('all_zones'));
@@ -47,14 +47,14 @@ class ZoneResource extends Controller
      */
     public function store(Request $request)
     {
-		
+
         $this->validate($request, [
             'name' => 'required',
 			'coordinate'=>'required',
         ]);
 
         try{
-		
+
 			$json = array();
 			$id = 0;
 			$country = Country::find($request->country,['name']);
@@ -74,9 +74,9 @@ class ZoneResource extends Controller
 
 					$id = $zone;
 				}
-				
+
 			} else {
-		
+
 				$zone 				=	new Zones;
 				$zone->zone_name 	=	$request->name;
 				$zone->country 		=	$country->name;
@@ -86,24 +86,24 @@ class ZoneResource extends Controller
 				$zone->currency 	=	$request->currency;
 				$zone->coordinate	=	serialize($request->coordinate);
 
-				
+
 				$zone->save();
-				
+
 				$id = $zone;
-				
+
 			}
-			
+
 			$json['status'] = $id;
-			
-			
+
+
            return response()->json($json);
 
         }catch (Exception $e) {
-			
+
             return response()->json(['error' => $e->getMessage() ]);
-        
+
 		}
-		
+
     }
 
     /**
@@ -113,19 +113,19 @@ class ZoneResource extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    { 
+    {
         try {
-			
+
             $zone = Zones::findOrFail($id);
 			$zone->coordinate = $this->makeCoordinate( $zone->coordinate );
-			
+
 			$all_zones = $this->makeZoesArray();
-			
-			
-			
+
+
+
             return view('admin.zone.create',compact('zone', 'all_zones'));
         } catch (ModelNotFoundException $e) {
-            return redirect()->route('admin.zone.index')->with('flash_error', 'No result found'); 
+            return redirect()->route('admin.zone.index')->with('flash_error', 'No result found');
         }
     }
 
@@ -139,7 +139,7 @@ class ZoneResource extends Controller
     public function update(Request $request, $id)
     {
 		try {
-			
+
 			return view('admin.zone.create');
 
         } catch (Exception $e) {
@@ -158,34 +158,34 @@ class ZoneResource extends Controller
         if(Setting::get('demo_mode', 0) == 1) {
             return back()->with('flash_error', 'Disabled for demo purposes! Please contact us at info@rommoz.com');
         }
-		
+
         try {
-			
+
 			$zone = Zones::where('id', $id )->first();
-			
+
 			if(!$zone) {
 				return back()->with('flash_error', 'Zone Not Found');
 			}
-			
+
 			$provider_zones = DB::table('zones')->where('id', $zone->id )->get()->pluck('id')->toArray();
-		
+
 			if( $provider_zones ) {
-				
+
 				DB::table('zones')->whereIn('id', $provider_zones)->delete();
-			
+
 			}
-			
+
 			$zone->delete();
-			
+
             return back()->with('flash_success', 'Zone deleted successfully');
-        } 
+        }
         catch (Exception $e) {
-            
+
             return back()->with('flash_error', 'Zone Not Found');
         }
     }
-	
-	
+
+
 	public function makeZoesArray( ) {
 		$all_zones = [];
 		$zones_obj = Zones::orderBy('created_at' , 'desc')->get();
@@ -194,42 +194,42 @@ class ZoneResource extends Controller
 				$all_zones[] = [ 'id' => $zone->id, 'name' => $zone->name, 'latlng' =>  $this->makeCoordinate( $zone->coordinate ) ];
 			}
 		}
-		
+
 		return $all_zones;
-		
+
 	}
-	
+
 	public function makeCoordinate( $path ) {
 		$new_coordiante  = array();
 		$coordinate = unserialize( $path );
 		foreach( $coordinate as $coord ) {
 			$new_coordiante[] = $this->makeLatlng( $coord );
 		}
-		
+
 		return $new_coordiante;
-		
+
 	}
-	
+
 	public function makeLatlng( $coord ) {
 		$path = explode(',', $coord);
 		$latlng['lat'] = $path[0];
 		$latlng['lng'] = $path[1];
-		
+
 		return  $latlng;
-		
-		
+
+
 	}
 	public function getCountry(){
 		return $country = Country::get();
 	}
 	public function getState(Request $request){
-		
+
 		return State::where('country_id',$request->country_id)->get();
 	}
 	public function getCity(Request $request){
-        
+
 		return City::where('state_id',$request->state_id)->get();
 	}
-	
-	
+
+
 }

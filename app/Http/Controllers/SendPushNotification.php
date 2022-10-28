@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\User;
-use App\ProviderDevice;
+use App\Models\User;
+use App\Models\ProviderDevice;
 use Exception;
-use App\PushNotification;
-use App\ProviderService;
+use App\Models\PushNotification;
+use App\Models\ProviderService;
 
 class SendPushNotification extends Controller
 {
@@ -22,37 +22,37 @@ class SendPushNotification extends Controller
     }
 
     public function chatNotify($userID,$msg,$request_id,$username){      //push notification to user
-       
+
         return $this->sendPushToUser($userID,$msg,'chat',$request_id,$username);
     }
     public function userNotify($userID,$title,$msg,$msg_type,$notification_images){      //push notification to user
-       
+
         $notifications  = PushNotification::where('to_user',$userID)->orderBy('id','desc')->first();
         $img="";
         $image = base_url+"/public/user/profile/".$notification_images;
         return $this->sendPushToUser($userID,$title,'admin',$msg,$msg_type,$img,$image);
     }
-    
+
    	public function chatNotifyProvider($providerID,$msg,$request_id,$username){    //push notification to provider
-       
+
         return $this->sendPushToProvider($providerID,$msg,'chat',$request_id,$username);
     }
     public function specialNoteNotifyProvider($providerID,$msg,$request_id,$username){    //push notification to provider
-       
+
         return $this->sendPushToProvider($providerID,$msg,'SpecialNote',$request_id,$username);
     }
     public function changeLocationNotifyProvider($providerID,$msg,$request_id,$username){    //push notification to provider
-       
+
         return $this->sendPushToProvider($providerID,$msg,'DestinationLocationChange',$request_id,$username);
     }
     public function notifyProvider($providerID,$title,$msg,$msg_type,$notification_images)  {    //push notification to provider
-    
+
         $notifications  = PushNotification::where('to_user',$providerID)->orderBy('id','desc')->first();
         $img="";
-        $image = base_url+"/public/user/profile/".$notification_images;
+        $image = url("/public/user/profile/".$notification_images);
         return $this->sendPushToProvider($providerID,$title,'admin',$msg,$msg_type,$img,$image);
     }
-    
+
     /**
      * Driver Arrived at your location.
      *
@@ -121,11 +121,11 @@ class SendPushNotification extends Controller
      * @return void
      */
     public function IncomingRequest($provider){
-      
+
         return $this->sendPushToProvider($provider, trans('api.push.incoming_request'));
 
     }
-    
+
 
     /**
      * Driver Documents verfied.
@@ -137,7 +137,7 @@ class SendPushNotification extends Controller
         return $this->sendPushToProvider($provider_id, trans('api.push.document_verfied'));
     }
 
-	
+
 	 /**
      * Dropped
      *
@@ -147,8 +147,8 @@ class SendPushNotification extends Controller
 
           return $this->sendPushToUser($user_id,trans('api.push.drop'));
     }
-	
-	
+
+
     /**
      * Money added to user wallet.
      *
@@ -186,13 +186,13 @@ class SendPushNotification extends Controller
     		            ->send($push_message);
 
     	    	}elseif($user->device_type == 'android'){
-    	    	  
+
     	    		 //return \PushNotification::app('AndroidUser')
     		      //      ->to($user->device_token)
-    		      //      ->send($push_message,array('msg_type' => $msg_type)); 
+    		      //      ->send($push_message,array('msg_type' => $msg_type));
 
 		shell_exec('curl -X POST --header "Authorization: key=AAAAxJsH8XU:APA91bEX41lZ2nvkXFLqd__il5MOsvyzAZbAsZgpgWMfXlE2YD6ai1OpKvGBLwyVBzose81XV9hDaOOBpYbBrxzycQcqOScVQXo2KCst8W0xfvYVgt6tpf-UY_zGxDY8hp5c3b7kwKfD" --header "Content-Type: application/json" https://fcm.googleapis.com/fcm/send -d "{\"to\":\"'.$user->device_token.'\",\"priority\":\"high\",\"data\":{\"msg_type\":\"'.$msg_type.'\",\"request_id\":\"'.$request_id.'\",\"image_url\":\"'.$img.'\",\"user_name\":\"'.$username.'\",\"msg\":\"'.$push_message.'\"},\"notification\":{\"body\": \"'.stripslashes($push_message).'\",\"title\":\"'.$msg_type.'\",\"image\":\"'.$img.'\"}}"');
-					
+
     	    	}
             }
 
@@ -267,7 +267,7 @@ class SendPushNotification extends Controller
         	   //         ->to($provider->token)
         	   //         ->send($push_message,array('msg_type' => $msg_type));
         	   //	shell_exec('curl -X POST --header "Authorization: key=AAAAyHhMF_A:APA91bFB2hLTRDNSUpD5cdxXLt10wrmRrYFu-KwTahKrXtP-CsdMnDfDB90pI_vQJ_gbqfzkOrHC-4UyGTklwTYbHIwpArKuX51aU9R7kOkeKp_W-9XvtSiOXrqFWOJwIqOwJ_8v10uC" --header "Content-Type: application/json" https://fcm.googleapis.com/fcm/send -d "{\"to\":\"'.$provider->token.'\",\"priority\":\"high\",\"data\":{\"msg_type\":\"'.$msg_type.'\",\"request_id\":\"'.$request_id.'\",\"image_url\":\"'.$img.'\",\"user_name\":\"'.$username.'\",\"msg\":\"'.$push_message.'\"},\"message_type\":\"chat\",\"notification\":{\"body\": \"'.stripslashes($push_message).'\",\"title\":\"'.$msg_type.'\",\"image\":\"'.$img.'\"}}"');
-	
+
             	}
             }
 
@@ -288,7 +288,7 @@ class SendPushNotification extends Controller
         foreach($data as $p)
         {
             return $this->sendPushToProvideroffline($p['provider_id'],$push_message,$msg_type);
-        }    
+        }
     }
     public function sendPushToProvideroffline($provider_id, $push_message,$msg_type = "",$request_id="",$username="",$admin="",$img="")
     {
@@ -301,12 +301,12 @@ class SendPushNotification extends Controller
         	            ->send($push_message);
 
             	}   elseif($provider->type == 'android'){
-            
+
                 // 		return \PushNotification::app('AndroidProvider')
         	    //         ->to($provider->token)
         	    //         ->send($push_message,array('msg_type' => $msg_type));
         	   	shell_exec('curl -X POST --header "Authorization: key=AAAAQEfF90w:APA91bHGFOiwuoHMy6n41frcumtnh7hTYCOrjvD5QpzxVs7cX9P9BiAKESt-vhZQY6Eu0YFZSjxBpbEA8FnIXDmHryH3I2UdUe8MKiY0axHkCEn1Kz3BWRzaJKehRRPkPqJxWpFXG2sL" --header "Content-Type: application/json" https://fcm.googleapis.com/fcm/send -d "{\"to\":\"'.$provider->token.'\",\"priority\":\"high\",\"data\":{\"msg_type\":\"'.$msg_type.'\",\"request_id\":\"'.$request_id.'\",\"image_url\":\"'.$img.'\",\"user_name\":\"'.$username.'\",\"msg\":\"'.$push_message.'\"},\"message_type\":\"chat\",\"notification\":{\"body\": \"'.stripslashes($push_message).'\",\"title\":\"'.$msg_type.'\",\"image\":\"'.$img.'\"}}"');
-	
+
             	}
             }
 

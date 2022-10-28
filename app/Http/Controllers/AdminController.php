@@ -11,21 +11,21 @@ use Setting;
 use Exception;
 use \Carbon\Carbon;
 use DB;
-use App\User;
-use App\Fleet;
-use App\Admin;
-use App\Provider;
-use App\UserPayment;
-use App\ServiceType;
-use App\UserRequests;
-use App\ProviderService;
-use App\UserRequestRating;
-use App\UserRequestPayment;
-use App\Package;
-use App\FareSetting;
-use App\PeakAndNight;
-use App\ContactUs;
-use App\Zones;
+use App\Models\User;
+use App\Models\Fleet;
+use App\Models\Admin;
+use App\Models\Provider;
+use App\Models\UserPayment;
+use App\Models\ServiceType;
+use App\Models\UserRequests;
+use App\Models\ProviderService;
+use App\Models\UserRequestRating;
+use App\Models\UserRequestPayment;
+use App\Models\Package;
+use App\Models\FareSetting;
+use App\Models\PeakAndNight;
+use App\Models\ContactUs;
+use App\Models\Zones;
 class AdminController extends Controller
 {
     /**
@@ -59,17 +59,17 @@ class AdminController extends Controller
             $cash = UserRequests::where('paid',1)->where('payment_mode','CASH')->count();
             $paypal = UserRequests::where('paid',1)->where('payment_mode','PAYPAL')->count();
             $revenue = UserRequestPayment::sum('total');
-            
+
             $providers = Provider::take(10)->orderBy('rating','desc')->get();
             $last7days_rides    = self::last7DaysTrip();
             $last7days_rides_r  = self::last7DaysTripRe();
-            $completed_rides    = UserRequests::where('status','COMPLETED')->count(); 
+            $completed_rides    = UserRequests::where('status','COMPLETED')->count();
             $ongoing_rides      = Provider::with('service')
                         ->whereHas('service', function( $query ) {
                             $query->where('provider_services.status', 'active')
                                     ->orWhere('provider_services.status', 'riding');
                         })->where('latitude', '!=', 0)->where('longitude', '!=', 0)
-                        ->where('providers.status', 'approved')->count();             
+                        ->where('providers.status', 'approved')->count();
             return view('admin.dashboard',compact('providers','fleet','cash','scheduled_rides','service','rides','user_cancelled','provider_cancelled','cancel_rides','revenue','last7days_rides','last7days_rides_r','completed_rides','ongoing_rides','paypal'));
         }
         catch(Exception $e){
@@ -85,11 +85,11 @@ class AdminController extends Controller
 
     public function destroy($id)
     {
-        
+
         try {
             ContactUs::find($id)->delete();
             return back()->with('message', 'User deleted successfully');
-        } 
+        }
         catch (Exception $e) {
             return back()->with('flash_error', 'User Not Found');
         }
@@ -103,31 +103,31 @@ class AdminController extends Controller
 
     $last7days_rides= UserRequests::whereDate('created_at','>=', Carbon::now()->subDays(7)) ->groupBy('created_at')->select('created_at', DB::raw('count(*) as total'))->get();
 
- 
+
   if (!$last7days_rides->isEmpty()) {
 
-     foreach ($last7days_rides as $key => $value) { 
-          
+     foreach ($last7days_rides as $key => $value) {
+
           $day = Carbon::now()->format( 'F' );
-          
+
          // $value->format('l'); total
-         $day_name= Carbon::parse($value->created_at)->format('D'); 
+         $day_name= Carbon::parse($value->created_at)->format('D');
          $days_arr[$day_name]= array($day_name, (float) $value->total);
      }
-      
+
   }
      $timestamp = strtotime('next Sunday');
         $days = array();
         for ($i = 0; $i < 7; $i++) {
 
-            $day_v = strftime('%a', $timestamp); 
+            $day_v = strftime('%a', $timestamp);
 
              if (isset($days_arr[$day_v]) && in_array($day_v, $days_arr[$day_v]))
               {
                  $arr =array();
                  $arr = $days_arr[$day_v];
                  $arr[] ='silver';
-                 $days[] =$arr; 
+                 $days[] =$arr;
               }else{
                 $days[] =array($day_v,0,'silver');
               }
@@ -135,7 +135,7 @@ class AdminController extends Controller
             $timestamp = strtotime('+1 day', $timestamp);
         }
 
-     return $days; 
+     return $days;
     //print_r($days);die;
 
 }
@@ -151,18 +151,18 @@ private static function last7DaysTripRe(){
     $last7days_rides= UserRequests::whereDate('created_at','>=', Carbon::now()->subDays(7)) ->groupBy('created_at','id')->select('created_at','id', DB::raw('count(*) as total'))->where('status','COMPLETED')->get();
 
 
- 
+
   if (!$last7days_rides->isEmpty()) {
 
-    
-     foreach ($last7days_rides as $key => $value) { 
-          
+
+     foreach ($last7days_rides as $key => $value) {
+
           $day = Carbon::now()->format( 'F' );
 
          // $value->format('l');
-         $day_name= Carbon::parse($value->created_at)->format('D'); 
+         $day_name= Carbon::parse($value->created_at)->format('D');
 
-           
+
          $rdata  = UserRequestPayment::where('request_id',$value->id)->first();
          if(!empty($rdata)){
              $total =(float) $rdata->total;
@@ -173,20 +173,20 @@ private static function last7DaysTripRe(){
 
          $days_arr[$day_name]= array($day_name,$total);
      }
-      
+
   }
      $timestamp = strtotime('next Sunday');
         $days = array();
         for ($i = 0; $i < 7; $i++) {
 
-            $day_v = strftime('%a', $timestamp); 
+            $day_v = strftime('%a', $timestamp);
 
              if (isset($days_arr[$day_v]) && in_array($day_v, $days_arr[$day_v]))
               {
                  $arr =array();
                  $arr = $days_arr[$day_v];
                  $arr[] ='silver';
-                 $days[] =$arr; 
+                 $days[] =$arr;
               }else{
                 $days[] =array($day_v,0,'silver');
               }
@@ -194,7 +194,7 @@ private static function last7DaysTripRe(){
             $timestamp = strtotime('+1 day', $timestamp);
         }
 
-     return $days; 
+     return $days;
     //print_r($days);die;
 
 
@@ -202,16 +202,16 @@ private static function last7DaysTripRe(){
 
 public function allocation_list()
     {
-        
+
        $data = Package::orderBy('id','desc')->get();
        foreach($data as $k=>$v){
        $data[$k]['plan_name'] = FareSetting::where('id',$v->fare_setting_id)->value('fare_plan_name');
        $data[$k]['service_name'] = ServiceType::where('id',$v->cab_id)->value('name');
-       
+
        }
         return view('admin.service.allocation_list',compact('data'));
     }
-   
+
     public function deletePKG(Request $request){
         // dd($request->id);
     try {
@@ -226,39 +226,39 @@ public function allocation_list()
 
     public function delivery()
     {
-    
+
         try{
-    
+
             return view('admin.delivery');
         }
         catch(Exception $e){
             return redirect()->route('admin.user.index')->with('flash_error','Something Went Wrong with Dashboard!');
         }
-    
+
     }
-    
+
     public function rental()
     {
-    
+
         try{
-    
+
             return view('admin.rental');
         }
         catch(Exception $e){
             return redirect()->route('admin.user.index')->with('flash_error','Something Went Wrong with Dashboard!');
         }
     }
-    
+
     public function airport()
     {
         try{
-    
+
             return view('admin.airport');
         }
         catch(Exception $e){
             return redirect()->route('admin.user.index')->with('flash_error','Something Went Wrong with Dashboard!');
         }
-    
+
     }
         /**
      * Heat Map.
@@ -287,7 +287,7 @@ public function allocation_list()
     {
         return view('admin.map.index');
     }
-    
+
     public function notification()
     {
         return view('admin.notification');
@@ -310,7 +310,7 @@ public function allocation_list()
                     ->where('longitude', '!=', 0)
                     ->get();
 
-            for ($i=0; $i < sizeof($Users); $i++) { 
+            for ($i=0; $i < sizeof($Users); $i++) {
                 $Users[$i]->status = 'user';
             }
 
@@ -369,7 +369,7 @@ public function allocation_list()
             $personal_ad = Helper::upload_picture($request->file('personal_ad'));
             Setting::set('personal_ad', $personal_ad);
         }
-         
+
         Setting::set('site_title', $request->site_title);
         Setting::set('store_link_user', $request->store_link_user);
         Setting::set('store_link_provider', $request->store_link_provider);
@@ -398,7 +398,7 @@ public function allocation_list()
         Setting::set('schedule_req_time', $request->schedule_req_time);
 
         Setting::save();
-        
+
         return back()->with('flash_success','Settings Updated Successfully');
     }
 
@@ -499,7 +499,7 @@ public function allocation_list()
             $admin->name = $request->name;
             $admin->email = $request->email;
             if($request->hasFile('picture')){
-                $admin->picture = $request->picture->store('admin/profile');  
+                $admin->picture = $request->picture->store('admin/profile');
             }
             $admin->save();
 
@@ -509,7 +509,7 @@ public function allocation_list()
         catch (Exception $e) {
              return back()->with('flash_error','Something Went Wrong!');
         }
-        
+
     }
 
     /**
@@ -571,7 +571,7 @@ public function allocation_list()
                     ->has('payment')
                     ->orderBy('user_requests.created_at','desc')
                     ->get();
-            
+
             return view('admin.payment.payment-history', compact('payments'));
         } catch (Exception $e) {
              return back()->with('flash_error','Something Went Wrong!');
@@ -733,9 +733,9 @@ public function allocation_list()
             $rides = UserRequests::with('payment')->orderBy('id','desc');
             $cancel_rides = UserRequests::where('status','CANCELLED');
             $revenue = UserRequestPayment::select(\DB::raw(
-                           'SUM(fixed + distance) as overall, SUM(commision) as commission,SUM(tax) as tax,SUM(discount) as discount' 
+                           'SUM(fixed + distance) as overall, SUM(commision) as commission,SUM(tax) as tax,SUM(discount) as discount'
                        ));
-                      
+
 
             if($type == 'today'){
 
@@ -760,7 +760,7 @@ public function allocation_list()
             $rides = $rides->get();
             $cancel_rides = $cancel_rides->count();
             $revenue = $revenue->get();
- 
+
             return view('admin.providers.statement', compact('rides','cancel_rides','revenue'))
                     ->with('page',$page);
 
@@ -797,7 +797,7 @@ public function allocation_list()
      * @return \Illuminate\Http\Response
      */
     public function statement_yearly(){
-        
+
         //return 1;
         return $this->statement('yearly');
     }
@@ -825,7 +825,7 @@ public function allocation_list()
 
                 $Providers[$index]->payment = UserRequestPayment::whereIn('request_id', $Rides)
                                 ->select(\DB::raw(
-                                   'SUM(ROUND(fixed) + ROUND(distance)) as overall, SUM(ROUND(commision)) as commission' 
+                                   'SUM(ROUND(fixed) + ROUND(distance)) as overall, SUM(ROUND(commision)) as commission'
                                 ))->get();
             }
 
@@ -853,9 +853,9 @@ public function allocation_list()
              return back()->with('flash_error','Something Went Wrong!');
         }
     }
-    
 
-    
+
+
     public function changeprovidorpassword(Request $request)
     {
         if(Setting::get('demo_mode', 0) == 1) {
@@ -868,25 +868,25 @@ public function allocation_list()
         ]);
 
         try {
-            
+
             $provider = Provider::findOrFail($request->id);
 			if( !$provider  ) {
 				throw new Exception('Provider Not Found');
 			}
-            
+
             if($request->password!="")
             {
                 $provider->password = bcrypt($request->password);
             }
             $provider->save();
 
-            return redirect()->back()->with('flash_success', 'Password Updated Successfully'); 
-           
+            return redirect()->back()->with('flash_success', 'Password Updated Successfully');
+
         } catch (Exception $e) {
              return back()->with('flash_error','Something Went Wrong!');
         }
     }
-    
+
     public function changeuserpassword(Request $request)
     {
         if(Setting::get('demo_mode', 0) == 1) {
@@ -899,34 +899,34 @@ public function allocation_list()
         ]);
 
         try {
-            
+
             $provider = User::findOrFail($request->id);
 			if( !$provider  ) {
 				throw new Exception('Provider Not Found');
 			}
-            
+
             if($request->password!="")
             {
                 $provider->password = bcrypt($request->password);
             }
             $provider->save();
 
-            return redirect()->back()->with('flash_success', 'Password Updated Successfully'); 
-           
+            return redirect()->back()->with('flash_success', 'Password Updated Successfully');
+
         } catch (Exception $e) {
              return back()->with('flash_error','Something Went Wrong!');
         }
     }
     public function fare_settings()
     {
-        
+
         $data = FareSetting::orderBy('id','desc')->get();
         return view('admin.fareSetting.application',compact('data'));
     }
     public function fare_settings_store(Request $request)
     {
        // dd($request->all());
-        
+
          $this->validate($request,[
                 'fare_plan_name'        =>  'required',
                 'from_km'       =>  'required',
@@ -937,12 +937,12 @@ public function allocation_list()
                 'late_night'    =>  'required',
             ]);
 
-            
+
         $data = $request->all();
         $req = FareSetting::Create($data);
         if($request->peak_hour=='YES'){
         foreach($request->peak_day as $pk => $peak){
-         if($request['peak_start_time'][$pk] !='' && $request['peak_end_time'][$pk] !='' && $peak !=''){   
+         if($request['peak_start_time'][$pk] !='' && $request['peak_end_time'][$pk] !='' && $peak !=''){
          $peakNight = new PeakAndNight;
          $peakNight->fare_setting_id = $req->id;
          $peakNight->peak_night_id = uniqid();
@@ -953,7 +953,7 @@ public function allocation_list()
          $peakNight->peak_night_type = 'PEAK';
          $peakNight->save();
            }
-         
+
          }
 
      }
@@ -971,21 +971,21 @@ public function allocation_list()
         }
      }
         // PeakAndNight::where('fare_setting_id',\Auth::guard('admin')->id())->update(['fare_setting_id'=>$req->id]);
-        
+
         return redirect()->route('admin.fare_settings')->with('flash_success','Settings Created Successfully');
     }
-    
+
      public function fare_settings_create()
     {
-        
+
        $data = Package::orderBy('id','desc')->get();
-       
+
         return view('admin.fareSetting.create',compact('data'));
     }
 
      public function destory_fare($id){
         try {
-            
+
             //return $id;
             FareSetting::find($id)->delete();
             return back()->with('message', 'Data deleted successfully');
@@ -993,28 +993,28 @@ public function allocation_list()
              return back()->with('flash_error','Something Went Wrong!');
         }
     }
-    
+
     public function deleteFare(Request $request){
 
         try {
             $id = $request->id;
-           
+
             FareSetting::find($id)->delete();
             PeakAndNight::where('fare_setting_id',$id)->delete();
-            
+
             return back()->with('message', 'Data deleted successfully');
         } catch (Exception $e) {
             // dd($e->getMessage());
              return back()->with('flash_error','Something Went Wrong!');
         }
     }
-    
+
     public function editFare($id){
         //$id = $request->id;
-        $data = FareSetting::where('id', $id)->with('peakNight')->orderBy('id')->first();        
+        $data = FareSetting::where('id', $id)->with('peakNight')->orderBy('id')->first();
         return view('admin.settings.fare_edit',compact('data'));
     }
-    
+
     public function editFareAction(Request $request){
 
         if($faresetting = FareSetting::find($request->id)){
@@ -1032,7 +1032,7 @@ public function allocation_list()
             foreach($request->peak_day as $pk => $peak){
                 if($request['peak_start_time'][$pk] !='' && $request['peak_end_time'][$pk] !='' && $peak !=''){
                  $peakstarttime = date('H:i:s',strtotime($request['peak_start_time'][$pk]));
-                 $peakendtime = date('H:i:s',strtotime($request['peak_end_time'][$pk])); 
+                 $peakendtime = date('H:i:s',strtotime($request['peak_end_time'][$pk]));
                  $peakNight = new PeakAndNight;
                  $peakNight->fare_setting_id = $request->id;
                  $peakNight->peak_night_id = uniqid();
@@ -1041,9 +1041,9 @@ public function allocation_list()
                  $peakNight->end_time = $peakendtime;
                  $peakNight->fare_in_percentage = $request['peak_fare'][$pk];
                  $peakNight->peak_night_type = 'PEAK';
-                 $peakNight->save();   
+                 $peakNight->save();
                 }
-             
+
              }
 
          }
@@ -1061,7 +1061,7 @@ public function allocation_list()
              $peakNight->peak_night_type = 'NIGHT';
              $peakNight->save();
             }
-            
+
          }
             return redirect()->route('admin.fare_settings')->with('flash_success','Data updated successfully');
         }else{
@@ -1070,11 +1070,11 @@ public function allocation_list()
         return view('admin.settings.fare_edit',compact('data'));
     }
      public function addpeakAnight(Request $request){
-        $fid = $request->fare_setting_id?:\Auth::guard('admin')->id();        
+        $fid = $request->fare_setting_id?:\Auth::guard('admin')->id();
         $count = PeakAndNight::where('peak_night_type',$request->peak_night_type)
         ->where('fare_setting_id',$fid)
         ->where('day',$request->day)->count();
-        
+
         if($count == 0){
         $data = [
                   'start_time'=>$request->start_time,
@@ -1084,7 +1084,7 @@ public function allocation_list()
                   'fare_in_percentage'=>$request->fare_in_percentage?:0,
                   'peak_night_type'=>$request->peak_night_type, //peak or night
                   'peak_night_id'=>uniqid(),
-            
+
                     ];
              $res = PeakAndNight::Create($data);
               $all = PeakAndNight::where('peak_night_type',$request->peak_night_type)
@@ -1094,25 +1094,25 @@ public function allocation_list()
              $all = PeakAndNight::where('peak_night_type',$request->peak_night_type)->get();
              return response()->json(['data'=>$all,'status'=>1]);
         }
-             
-        
+
+
     }
     public function cabAllocation(Request $request){
-        
+
         $data = [
-            
+
             'fare_setting_id'=>$request->fare_setting_id,
             // 'category'=>$request->category,
             'cab_id'=>$request->cab_id,
             'zone_id'=>$request->provider_id,
-            'description'=>$request->description           
-            
+            'description'=>$request->description
+
             ];
        $res = Package::Create($data);
-        
+
         return redirect()->route('admin.allocation_list')->with('flash_success','Settings Created Successfully');
-    }    
-    
+    }
+
     public function cabAllocation_edit($id){
         $package = Package::where('id',$id)->orderBy('id','desc')->first();
        // foreach($package as $k=>$v){
@@ -1134,7 +1134,7 @@ public function allocation_list()
        $package->description = $request->description;
        $package->save();
         return redirect()->route('admin.allocation_list')->with('flash_success','Settings Updated Successfully');
-        } 
+        }
 
         catch (ModelNotFoundException $e) {
             return back()->with('flash_error', 'Settings Updated Not Found');
@@ -1155,14 +1155,14 @@ public function allocation_list()
         ]);
 
         try {
-            
+
             $service =ServiceType::findOrFail($id);
-            
+
             if($request->hasFile('image')) {
                 $service['image'] = Helper::upload_picture($request->file('image'));
             }
             $service =ServiceType::findOrFail($id);
-            
+
             if($request->hasFile('vehicle_image')) {
                 $service['vehicle_image'] = Helper::upload_picture($request->file('vehicle_image'));
             }
@@ -1175,9 +1175,9 @@ public function allocation_list()
             $service->description = $request->description;
             //dd($service);
             $service->save();
-            return redirect()->route('admin.service.index')->with('flash_success', 'Service Type Updated Successfully'); 
-              
-        } 
+            return redirect()->route('admin.service.index')->with('flash_success', 'Service Type Updated Successfully');
+
+        }
 
         catch (ModelNotFoundException $e) {
             return back()->with('flash_error', 'Service Type Not Found');

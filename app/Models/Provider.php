@@ -52,7 +52,7 @@ class Provider extends Authenticatable
      */
     public function service()
     {
-        return $this->hasOne('App\ProviderService');
+        return $this->hasOne('App\Models\ProviderService');
     }
 
     /**
@@ -60,7 +60,7 @@ class Provider extends Authenticatable
      */
     public function incoming_requests()
     {
-        return $this->hasMany('App\RequestFilter')->where('status', 0);
+        return $this->hasMany('App\Models\RequestFilter')->where('status', 0);
     }
 
     /**
@@ -68,7 +68,7 @@ class Provider extends Authenticatable
      */
     public function requests()
     {
-        return $this->hasMany('App\RequestFilter');
+        return $this->hasMany('App\Models\RequestFilter');
     }
 
     /**
@@ -76,7 +76,7 @@ class Provider extends Authenticatable
      */
     public function profile()
     {
-        return $this->hasOne('App\ProviderProfile');
+        return $this->hasOne('App\Models\ProviderProfile');
     }
 
     /**
@@ -84,7 +84,7 @@ class Provider extends Authenticatable
      */
     public function device()
     {
-        return $this->hasOne('App\ProviderDevice');
+        return $this->hasOne('App\Models\ProviderDevice');
     }
 
     /**
@@ -92,7 +92,7 @@ class Provider extends Authenticatable
      */
     public function trips()
     {
-        return $this->hasMany('App\UserRequests');
+        return $this->hasMany('App\Models\UserRequests');
     }
 
     /**
@@ -100,7 +100,7 @@ class Provider extends Authenticatable
      */
     public function accepted()
     {
-        return $this->hasMany('App\UserRequests','provider_id')
+        return $this->hasMany('App\Models\UserRequests','provider_id')
                     ->where('status','!=','CANCELLED');
     }
 
@@ -109,7 +109,7 @@ class Provider extends Authenticatable
      */
     public function cancelled()
     {
-        return $this->hasMany('App\UserRequests','provider_id')
+        return $this->hasMany('App\Models\UserRequests','provider_id')
                 ->where('status','CANCELLED');
     }
 
@@ -118,7 +118,7 @@ class Provider extends Authenticatable
      */
     public function documents()
     {
-        return $this->hasMany('App\ProviderDocument');
+        return $this->hasMany('App\Models\ProviderDocument');
     }
 
     /**
@@ -126,7 +126,7 @@ class Provider extends Authenticatable
      */
     public function document($id)
     {
-        return $this->hasOne('App\ProviderDocument')->where('document_id', $id)->first();
+        return $this->hasOne('App\Models\ProviderDocument')->where('document_id', $id)->first();
     }
 
     /**
@@ -134,7 +134,7 @@ class Provider extends Authenticatable
      */
     public function pending_documents()
     {
-        return $this->hasMany('App\ProviderDocument')->where('status', 'ASSESSING')->count();
+        return $this->hasMany('App\Models\ProviderDocument')->where('status', 'ASSESSING')->count();
     }
 
     public function bank()

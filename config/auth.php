@@ -112,62 +112,62 @@ return [
     'providers' => [
         'accounts' => [
             'driver' => 'eloquent',
-            'model' => App\Account::class,
+            'model' => App\Models\Account::class,
         ],
 
         'fleets' => [
             'driver' => 'eloquent',
-            'model' => App\Fleet::class,
+            'model' => App\Models\Fleet::class,
         ],
 
         'dispatchers' => [
             'driver' => 'eloquent',
-            'model' => App\Dispatcher::class,
+            'model' => App\Models\Dispatcher::class,
         ],
 
         'support' => [
             'driver' => 'eloquent',
-            'model' => App\SupportUser::class,
+            'model' => App\Models\SupportUser::class,
         ],
 
 
         'accounts' => [
             'driver' => 'eloquent',
-            'model' => App\Account::class,
+            'model' => App\Models\Account::class,
         ],
 
         'fleets' => [
             'driver' => 'eloquent',
-            'model' => App\Fleet::class,
+            'model' => App\Models\Fleet::class,
         ],
 
         'cms' => [
             'driver' => 'eloquent',
-            'model' => App\CmsUser::class,
+            'model' => App\Models\CmsUser::class,
         ],
 
         'crm' => [
             'driver' => 'eloquent',
-            'model' => App\CrmUser::class,
+            'model' => App\Models\CrmUser::class,
         ],
 
         'dispatchers' => [
             'driver' => 'eloquent',
-            'model' => App\Dispatcher::class,
+            'model' => App\Models\Dispatcher::class,
         ],
         'providers' => [
             'driver' => 'eloquent',
-            'model' => App\Provider::class,
+            'model' => App\Models\Provider::class,
         ],
 
         'admins' => [
             'driver' => 'eloquent',
-            'model' => App\Admin::class,
+            'model' => App\Models\Admin::class,
         ],
 
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\User::class,
+            'model' => App\Models\User::class,
         ],
     ],
 
@@ -229,12 +229,12 @@ return [
 
         'fleets' => [
             'driver' => 'eloquent',
-            'model' => App\Fleet::class,
+            'model' => App\Models\Fleet::class,
         ],
 
         'dispatchers' => [
             'driver' => 'eloquent',
-            'model' => App\Dispatcher::class,
+            'model' => App\Models\Dispatcher::class,
         ],
 
         'providers' => [

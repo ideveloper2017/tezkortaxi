@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Resource;
 
-use App\Fleet;
+use App\Models\Fleet;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -62,7 +62,7 @@ class FleetResource extends Controller
 
             return back()->with('flash_success','Fleet Details Saved Successfully');
 
-        } 
+        }
 
         catch (Exception $e) {
             return back()->with('flash_error', 'Fleet Not Found');
@@ -77,7 +77,7 @@ class FleetResource extends Controller
      */
     public function show($id)
     {
-        // 
+        //
     }
 
     /**
@@ -108,7 +108,7 @@ class FleetResource extends Controller
         if(Setting::get('demo_mode', 0) == 1) {
             return back()->with('flash_error', 'Disabled for demo purposes! Please contact us at info@rommoz.com');
         }
-        
+
         $this->validate($request, [
             'name' => 'required|max:255',
             'company' => 'required|max:255',
@@ -130,8 +130,8 @@ class FleetResource extends Controller
             $fleet->mobile = $request->mobile;
             $fleet->save();
 
-            return redirect()->route('admin.fleet.index')->with('flash_success', 'Fleet Updated Successfully');    
-        } 
+            return redirect()->route('admin.fleet.index')->with('flash_success', 'Fleet Updated Successfully');
+        }
 
         catch (ModelNotFoundException $e) {
             return back()->with('flash_error', 'Fleet Not Found');
@@ -149,11 +149,11 @@ class FleetResource extends Controller
         if(Setting::get('demo_mode', 0) == 1) {
             return back()->with('flash_error', 'Disabled for demo purposes! Please contact us at info@rommoz.com');
         }
-        
+
         try {
             Fleet::find($id)->delete();
             return back()->with('message', 'Fleet deleted successfully');
-        } 
+        }
         catch (Exception $e) {
             return back()->with('flash_error', 'Fleet Not Found');
         }

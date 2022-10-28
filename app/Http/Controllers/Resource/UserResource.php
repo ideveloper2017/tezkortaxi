@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Resource;
 
-use App\User;
-use App\UserRequests;
+use App\Models\User;
+use App\Models\UserRequests;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -65,7 +65,7 @@ class UserResource extends Controller
 
             return back()->with('flash_success','User Details Saved Successfully');
 
-        } 
+        }
 
         catch (Exception $e) {
             return back()->with('flash_error', 'User Not Found');
@@ -136,8 +136,8 @@ class UserResource extends Controller
             $user->email = $request->email;
             $user->save();
 
-            return redirect()->route('admin.user.index')->with('flash_success', 'User Updated Successfully');    
-        } 
+            return redirect()->route('admin.user.index')->with('flash_success', 'User Updated Successfully');
+        }
 
         catch (ModelNotFoundException $e) {
             return back()->with('flash_error', 'User Not Found');
@@ -155,12 +155,12 @@ class UserResource extends Controller
          if(Setting::get('demo_mode', 0) == 1) {
             return back()->with('flash_error', 'Disabled for demo purposes! Please contact us at info@rommoz.com');
         }
-        
+
         try {
 
             User::find($id)->delete();
             return back()->with('message', 'User deleted successfully');
-        } 
+        }
         catch (Exception $e) {
             return back()->with('flash_error', 'User Not Found');
         }

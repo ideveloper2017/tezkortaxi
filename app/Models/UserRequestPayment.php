@@ -39,14 +39,14 @@ class UserRequestPayment extends Model
      */
     public function request()
     {
-        return $this->belongsTo('App\UserRequests');
+        return $this->belongsTo('App\Models\UserRequests');
     }
 
 
 
     public function userrequestpayments()
     {
-        return $this->hasOne('App\UserRequests');
+        return $this->hasOne('App\Models\UserRequests');
     }
 
     /**
@@ -54,11 +54,11 @@ class UserRequestPayment extends Model
      */
     public function provider()
     {
-        return $this->belongsTo('App\Provider');
+        return $this->belongsTo('App\Models\Provider');
     }
 
      public function promocode()
     {
-        return $this->belongsTo('App\Promocode','promocode_id');
+        return $this->belongsTo('App\Models\Promocode','promocode_id');
     }
 }

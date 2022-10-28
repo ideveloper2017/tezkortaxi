@@ -11,12 +11,12 @@ use Exception;
 use Setting;
 use Storage;
 
-use App\Provider;
-use App\Document;
-use App\ServiceType;
-use App\ProviderService;
-use App\UserRequestPayment;
-use App\UserRequests;
+use App\Models\Provider;
+use App\Models\Document;
+use App\Models\ServiceType;
+use App\Models\ProviderService;
+use App\Models\UserRequestPayment;
+use App\Models\UserRequests;
 use App\Helpers\Helper;
 
 class ProviderResource extends Controller
@@ -30,15 +30,15 @@ class ProviderResource extends Controller
     {
         $AllProviders = Provider::with('service','accepted','cancelled', 'documents')
                     ->orderBy('id', 'DESC');
-		
+
         if(request()->has('fleet')){
             $providers = $AllProviders->where('fleet',$request->fleet)->get();
         }else{
             $providers = $AllProviders->get();
         }
-		 
-		
-        return view('admin.providers.index', compact('providers', 'documents'));
+
+
+        return view('admin.providers.index', compact('providers'));
     }
 
     /**
@@ -48,9 +48,9 @@ class ProviderResource extends Controller
      */
     public function create()
     {
-		
+
 		$services = ServiceType::all();
-		
+
         return view('admin.providers.create', compact('services'));
     }
 
@@ -76,7 +76,7 @@ class ProviderResource extends Controller
 			'service_type'	=> 'required',
 			'service_number'=>	'required',
 			'service_model'	=>	'required',
-			
+
         ]);
 
         try{
@@ -89,12 +89,12 @@ class ProviderResource extends Controller
             }
 
             $Provider = Provider::create($provider);
-			
+
 			if( $Provider ) {
-				
+
 				$provider_service = ProviderService::create([
 					'provider_id' 	=> $Provider->id,
-					'status'		=> 'offline',	
+					'status'		=> 'offline',
 					'service_type_id' => $provider['service_type'],
 					'service_number' => $provider['service_number'],
 					'service_model' => $provider['service_model'],
@@ -103,14 +103,14 @@ class ProviderResource extends Controller
                     'service_name' => isset($provider['service_name']) ? $provider['service_name'] : '',
                     'service_ac' => isset($provider['service_ac']) ? $provider['service_ac'] : '',
 				]);
-		
-				
-				
+
+
+
 			}
-			
+
             return back()->with('flash_success','Driver Details Saved Successfully');
 
-        } 
+        }
 
         catch (Exception $e) {
             return back()->with('flash_error', 'Driver Not Found');
@@ -141,20 +141,20 @@ class ProviderResource extends Controller
      */
     public function edit($id)
     {
-        try { 
-			
+        try {
+
             $provider = Provider::with('service')
 						->whereHas('service', function( $query ) use($id) {
 							$query->where('provider_id', $id );
 						})->where('id', $id)->first();
-			
+
 			if( ! $provider ) {
 				throw new Exception('Driver Not Found!');
 			}
-			
+
             $services = ServiceType::all();
-			
-			
+
+
 			//$provder_service = ProviderService::where('');
 			return view('admin.providers.edit',compact('provider', 'services'));
         } catch (Exception $e) {
@@ -195,18 +195,18 @@ class ProviderResource extends Controller
 			if( !$provider  ) {
 				throw new Exception('Driver Not Found');
 			}
-			
+
 			$provider_service = ProviderService::where('provider_id', $id)->first();
 			if( !$provider_service ) {
 				throw new Exception('Driver Service Not Found');
 			}
-			
-			
+
+
             if($request->hasFile('avatar')) {
                 if($provider->avatar) {
                     Storage::delete($provider->avatar);
                 }
-                $provider->avatar = $request->avatar->store('provider/profile');                    
+                $provider->avatar = $request->avatar->store('provider/profile');
             }
 
             $provider->first_name = $request->first_name;
@@ -226,11 +226,11 @@ class ProviderResource extends Controller
             $provider_service->service_make = $request->service_make;
             $provider_service->service_name = $request->service_name;
             $provider_service->service_ac = $request->service_ac;
-			
+
 			$provider_service->save();
-			
-			return redirect()->route('admin.provider.index')->with('flash_success', 'Driver Updated Successfully');    
-        } 
+
+			return redirect()->route('admin.provider.index')->with('flash_success', 'Driver Updated Successfully');
+        }
 
         catch (Exception $e) {
             return back()->with('flash_error', $e->getMessage() );
@@ -250,23 +250,23 @@ class ProviderResource extends Controller
         }
 
         try {
-			
+
             Provider::find($id)->delete();
-			
+
 			ProviderService::where('provider_id', $id)->delete();
 			DB::table('provider_devices')->where('provider_id', $id)->delete();
-			
+
 			$provider_documents = DB::table('provider_documents')->where('provider_id', $id)->get();
-			
+
 			if( $provider_documents ) {
-				
+
 			}
-			
+
 			DB::table('provider_profiles')->where('provider_id', $id)->delete();
 			DB::table('provider_zone')->where('driver_id', $id)->delete();
-			
+
             return back()->with('message', 'Driver deleted successfully');
-        } 
+        }
         catch (Exception $e) {
             return back()->with('flash_error', 'Driver Not Found');
         }
@@ -304,7 +304,7 @@ class ProviderResource extends Controller
         if(Setting::get('demo_mode', 0) == 1) {
             return back()->with('flash_error', 'Disabled for demo purposes! Please contact us at info@rommoz.com');
         }
-        
+
         Provider::where('id',$id)->update(['status' => 'banned']);
         return back()->with('flash_success', "Driver Disapproved");
     }
@@ -334,7 +334,7 @@ class ProviderResource extends Controller
      * @return \Illuminate\Http\Response
      */
     public function statement($id){
-    
+
         try{
 
             $requests = UserRequests::where('provider_id',$id)
@@ -348,7 +348,7 @@ class ProviderResource extends Controller
             $revenue = UserRequestPayment::whereHas('request', function($query) use($id) {
                                     $query->where('provider_id', $id );
                                 })->select(\DB::raw(
-                                   'SUM(ROUND(fixed) + ROUND(distance)) as overall, SUM(ROUND(commision)) as commission' 
+                                   'SUM(ROUND(fixed) + ROUND(distance)) as overall, SUM(ROUND(commision)) as commission'
                                ))->get();
 
             $revenues = UserRequestPayment::sum('total');
@@ -378,7 +378,7 @@ class ProviderResource extends Controller
             $revenue = UserRequestPayment::whereHas('request', function($query) use($id) {
                                     $query->where('provider_id', $id );
                                 })->select(\DB::raw(
-                                   'SUM(ROUND(fixed) + ROUND(distance)) as overall, SUM(ROUND(commision)) as commission' 
+                                   'SUM(ROUND(fixed) + ROUND(distance)) as overall, SUM(ROUND(commision)) as commission'
                                ))->get();
 
 

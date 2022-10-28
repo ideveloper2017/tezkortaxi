@@ -70,7 +70,7 @@ class UserRequests extends Model
      */
     public function service_type()
     {
-        return $this->belongsTo('App\ServiceType');
+        return $this->belongsTo('App\Models\ServiceType');
     }
 
     /**
@@ -78,12 +78,12 @@ class UserRequests extends Model
      */
     public function payment()
     {
-        return $this->hasOne('App\UserRequestPayment', 'request_id');
+        return $this->hasOne('App\Models\UserRequestPayment', 'request_id');
     }
 
     public function card()
     {
-        return $this->hasMany('App\Card', 'user_id');
+        return $this->hasMany('App\Models\Card', 'user_id');
     }
 
     /**
@@ -91,7 +91,7 @@ class UserRequests extends Model
      */
     public function rating()
     {
-        return $this->hasOne('App\UserRequestRating', 'request_id');
+        return $this->hasOne('App\Models\UserRequestRating', 'request_id');
     }
 
     /**
@@ -99,7 +99,7 @@ class UserRequests extends Model
      */
     public function filter()
     {
-        return $this->hasMany('App\RequestFilter', 'request_id');
+        return $this->hasMany('App\Models\RequestFilter', 'request_id');
     }
 
     /**
@@ -115,17 +115,17 @@ class UserRequests extends Model
      */
     public function provider()
     {
-        return $this->belongsTo('App\Provider');
+        return $this->belongsTo('App\Models\Provider');
     }
 
     public function userrequestpayment()
     {
-        return $this->belongsTo('App\UserRequestPayment');
+        return $this->belongsTo('App\Models\UserRequestPayment');
     }
 
     public function provider_service()
     {
-        return $this->belongsTo('App\ProviderService', 'provider_id', 'provider_id');
+        return $this->belongsTo('App\Models\ProviderService', 'provider_id', 'provider_id');
     }
 
     public function scopePendingRequest($query, $user_id)

@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\UserRequests;
-use App\RequestFilter;
-use App\Provider;
+use App\Models\UserRequests;
+use App\Models\RequestFilter;
+use App\Models\Provider;
 use Carbon\Carbon;
 use App\Http\Controllers\ProviderResources\TripController;
-use App\AdminHelps;
+use App\Models\AdminHelps;
 use App\AdminTerms;
-use App\AdminFaq;
-use App\ProviderService;
+use App\Models\AdminFaq;
+use App\Models\ProviderService;
 use Illuminate\Support\Facades\DB;
 class ProviderController extends Controller
 {
@@ -39,9 +39,9 @@ class ProviderController extends Controller
             $rides = UserRequests::has('user')->orderBy('id','desc')->get();
             $cancel_rides = UserRequests::where('status','CANCELLED')->where('provider_id',\Auth::guard('provider')->user()->id);
             $scheduled_rides = UserRequests::where('status','SCHEDULED')->where('provider_id',\Auth::guard('provider')->user()->id)->count();
-           
+
             $completed_rides = UserRequests::where('status','COMPLETED')->where('provider_id',\Auth::guard('provider')->user()->id)->count();
-        
+
             //$accepted_rides = UserRequests::where('status','ACCEPTED')->where('provider_id',\Auth::guard('provider')->user()->id)->count();
             $accepted_rides = $scheduled_rides + $completed_rides;
             $cancel_rides = $cancel_rides->count();
@@ -51,20 +51,20 @@ class ProviderController extends Controller
 
             $from_date1 = date("Y-m-d")." 00:00:00";
             $to_date1 = date("Y-m-d")." 23:59:59";
-           
+
             //$today_rides = $rides->where('provider_id',\Auth::guard('provider')->user()->id)->where('created_at', '>=', $from_date1)->andwhere('created_at', '<', $to_date1);
-        
+
             $today_rides = $rides->where('provider_id',\Auth::guard('provider')->user()->id)->where('created_at', '>', Carbon::today()->startOfDay())->where('created_at', '<', Carbon::today()->endOfDay());
 
             //whereBetween('created_at', [$from_date1, $to_date1]);
-           
+
             $fully = UserRequests::where('provider_id',\Auth::guard('provider')->user()->id)
                     ->with('payment','service_type')
                     ->get();
-                    
+
             $query = "SELECT SUM(user_request_payments.fixed + user_request_payments.distance + user_request_payments.tax ) as revenue FROM `user_requests` LEFT JOIN user_request_payments on user_requests.id=user_request_payments.request_id where provider_id=".\Auth::guard('provider')->user()->id;
             $rev = collect(DB::select($query))->first();
-           
+
             return view('provider.index',compact('scheduled_rides','cancel_rides','rides','accepted_rides','today_rides','completed_rides','fully','rev'));
         }
         catch(Exception $e){
@@ -81,7 +81,7 @@ class ProviderController extends Controller
     // public function updateStatus(Request $request)
     // {
     //   return ProviderService::where('status',$request->status)->update('provider_id',Auth::guard('provider')->user()->id);
-        
+
     // }
     /**
      * Show the application dashboard.
@@ -91,7 +91,7 @@ class ProviderController extends Controller
 
     public function incoming(Request $request)
     {
-       
+
         return (new TripController())->index($request);
     }
 
@@ -229,7 +229,7 @@ class ProviderController extends Controller
                     ->with('payment','service_type')
                     ->orderBy('id', 'desc')->take(10)
                     ->get();
-        
+
         return view('provider.payment.dailyearning',compact('provider','weekly','fully','today'));
     }
 
@@ -239,7 +239,7 @@ class ProviderController extends Controller
                     ->with('service','accepted','cancelled')
                     ->get();
 
-        $fully = (new ProviderResources\TripController)->dailyearning_detail($request);            
+        $fully = (new ProviderResources\TripController)->dailyearning_detail($request);
 
         return view('provider.payment.dailyearning_detail',compact('provider','fully'));
     }
@@ -373,17 +373,17 @@ class ProviderController extends Controller
             $rides = UserRequests::has('user')->orderBy('id','desc')->get();
             $cancel_rides = UserRequests::where('status','CANCELLED')->where('provider_id',\Auth::guard('provider')->user()->id);
             $scheduled_rides = UserRequests::where('status','SCHEDULED')->where('provider_id',\Auth::guard('provider')->user()->id)->count();
-           
+
             $completed_rides = UserRequests::where('status','COMPLETED')->where('provider_id',\Auth::guard('provider')->user()->id)->count();
-        
+
             $accepted_rides = $scheduled_rides + $completed_rides;
             $cancel_rides = $cancel_rides->count();
             $rides = $rides->where('provider_id',\Auth::guard('provider')->user()->id);
-          
+
             $today_rides = $rides->where('provider_id',\Auth::guard('provider')->user()->id)->where('created_at', '>', Carbon::today()->startOfDay())->where('created_at', '<', Carbon::today()->endOfDay());
 
             $fully = (new ProviderResources\TripController)->upcoming_details($request);
-           
+
             return view('provider.index',compact('scheduled_rides','cancel_rides','rides','accepted_rides','today_rides','completed_rides','fully'));
         } catch (ModelNotFoundException $e) {
             return back()->with(['flash_error' => "Something Went Wrong"]);
@@ -399,7 +399,7 @@ class ProviderController extends Controller
 
         catch (Exception $e) {
             return response()->json(['error' => trans('api.something_went_wrong')]);
-        } 
+        }
     }
 
     public function helps()
@@ -420,7 +420,7 @@ class ProviderController extends Controller
 
         catch (Exception $e) {
             return response()->json(['error' => trans('api.something_went_wrong')]);
-        } 
+        }
     }
 
     public function terms()
@@ -441,7 +441,7 @@ class ProviderController extends Controller
 
         catch (Exception $e) {
             return response()->json(['error' => trans('api.something_went_wrong')]);
-        } 
+        }
     }
 
     public function faqs()

@@ -83,7 +83,7 @@ return [
     */
 
     'locale' => 'en',
-
+    'languages' => ['en', 'fr', 'ru', 'sp', 'ar'],
     /*
     |--------------------------------------------------------------------------
     | Application Fallback Locale
@@ -216,6 +216,11 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
+        'Setting' => anlutro\LaravelSettings\Facade::class,
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+        'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+        'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
+        'Debugbar' => Barryvdh\Debugbar\Facade::class,
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 

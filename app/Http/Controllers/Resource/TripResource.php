@@ -5,7 +5,7 @@ use Carbon\Carbon;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\UserRequests;
+use App\Models\UserRequests;
 use Auth;
 use Setting;
 
@@ -146,9 +146,9 @@ class TripResource extends Controller
     {
         try {
             $request = UserRequests::findOrFail($id);
-            
+
             $promocode = $request->payment()->with('promocode')->first();
-            
+
             return view('admin.request.show', compact('request','promocode'));
         }   catch (Exception $e) {
             return back()->with('flash_error','Something Went Wrong!');
@@ -192,7 +192,7 @@ class TripResource extends Controller
         }
     }
 
-   
+
     /**
      * Update the specified resource in storage.
      *
@@ -202,7 +202,7 @@ class TripResource extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+
         /*$this->validate($request, [
             'first_name' => 'required|max:255',
             'mobile' => 'digits_between:6,13',
@@ -219,8 +219,8 @@ class TripResource extends Controller
             $UserRequest->provider->save();
             $UserRequest->save();
 
-            return redirect()->route('admin.requests.scheduled')->with('flash_success', 'Scheduled Updated Successfully');    
-        } 
+            return redirect()->route('admin.requests.scheduled')->with('flash_success', 'Scheduled Updated Successfully');
+        }
 
         catch (ModelNotFoundException $e) {
             return back()->with('flash_error', 'User Not Found');
@@ -238,7 +238,7 @@ class TripResource extends Controller
         if(Setting::get('demo_mode', 0) == 1) {
             return back()->with('flash_error', 'Disabled for demo purposes! Please contact us at info@rommoz.com');
         }
-        
+
         try {
             $Request = UserRequests::findOrFail($id);
             $Request->delete();

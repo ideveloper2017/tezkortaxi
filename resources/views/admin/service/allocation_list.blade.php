@@ -1,6 +1,6 @@
 <?php
-use App\Zones;
-use App\ServiceType;
+use App\Models\Zones;
+use App\Models\ServiceType;
 ?>
 @extends('admin.layout.base')
 
@@ -18,12 +18,12 @@ use App\ServiceType;
                         <th>ID</th>
                         <th>Fare Plan</th>
                         <th>Vehicle List</th>
-                        <th>Zone</th>                        
-                        <th>Status</th>                     
+                        <th>Zone</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody>                    
+                <tbody>
                 @foreach($data as $index => $service)
 			        <?php $zonename=Zones::select('*')->where('id' ,$service->zone_id)->first(); ?>
                     <?php  ?>
@@ -47,12 +47,12 @@ use App\ServiceType;
                             </form>
                         </td>
                     </tr>
-                    
-                    
-    
+
+
+
                 @endforeach
                 </tbody>
-               
+
             </table>
         </div>
     </div>

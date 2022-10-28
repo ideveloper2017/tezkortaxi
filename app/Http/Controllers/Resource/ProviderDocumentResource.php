@@ -8,11 +8,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\SendPushNotification;
 
 use Exception;
-use App\Provider;
-use App\ServiceType;
-use App\ProviderService;
-use App\ProviderDocument;
-use App\Document;
+use App\Models\Provider;
+use App\Models\ServiceType;
+use App\Models\ProviderService;
+use App\Models\ProviderDocument;
+use App\Models\Document;
 use Carbon\Carbon;
 
 
@@ -25,17 +25,17 @@ class ProviderDocumentResource extends Controller
      */
     public function index(Request $request, $provider)
     {
-       
+
         try {
-			
+
             $Provider = Provider::findOrFail($provider);
             $ProviderService = ProviderService::where('provider_id',$provider)->with('service_type')->get();
             $ServiceTypes = ServiceType::all();
-			
+
 			$documents = Document::all();
-			
+
 			$ProviderDocuments = ProviderDocument::where('provider_id', $provider )->get();
-			
+
 			$pr_documents = [];
 			if( $documents->count() ) {
 				foreach( $documents as $doc ) {
@@ -51,7 +51,7 @@ class ProviderDocumentResource extends Controller
 							}
 						}
 					}
-					
+
 					$pr_documents[] =  [
 						'id'			=> $doc->id,
 						'name'			=> $doc->name,
@@ -62,13 +62,13 @@ class ProviderDocumentResource extends Controller
 						'provider_id'	=> $provider,
 					];
 				}
-				
+
 			}
-			
-			
+
+
             return view('admin.providers.document.index', compact('Provider', 'ServiceTypes','ProviderService', 'pr_documents'));
         } catch (ModelNotFoundException $e) {
-            
+
             return redirect()->route('admin.index');
         }
     }
@@ -96,10 +96,10 @@ class ProviderDocumentResource extends Controller
                 'service_number' => 'required',
                 'service_model' => 'required',
             ]);
-        
+
 
         try {
-            
+
             $ProviderService = ProviderService::where('provider_id', $provider)->firstOrFail();
             $ProviderService->update([
                     'service_type_id' => $request->service_type,
@@ -143,16 +143,16 @@ class ProviderDocumentResource extends Controller
      */
     public function edit(Request $request, $provider, $id)
     {
-        
-        
+
+
         try {
-			
+
             $Document = ProviderDocument::where('provider_id', $provider)->where('document_id', $id)->first();
-			
+
 			if( ! $Document ) {
 				throw new  Exception('Driver document not found!');
 			}
-			
+
             return view('admin.providers.document.edit', compact('Document'));
         } catch (Exception $e) {
             return redirect()
@@ -160,8 +160,8 @@ class ProviderDocumentResource extends Controller
                 ->with('flash_error', $e->getMessage() );
         }
     }
-    
-    
+
+
 
     /**
      * Update the specified resource in storage.
@@ -170,20 +170,20 @@ class ProviderDocumentResource extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    
-	
+
+
 	public function update(Request $request, $provider, $id)
     {
-		
+
         try {
-			
+
             $Document = ProviderDocument::where('provider_id', $provider)->where('document_id', $id)->first();
-			
+
 			if( ! $Document ) {
 				throw new  Exception('Driver document not found!');
 			}
-				
-				
+
+
             $Document->status = 'ACTIVE';
 			$Document->save();
 
@@ -213,13 +213,13 @@ class ProviderDocumentResource extends Controller
             $Document->delete();
 
 			$p_documents  = ProviderDocument::where('provider_id', $provider)->count();
-			
+
 			if( $p_documents == 0 ) {
 				$Provider = Provider::where('id', $provider)->firstOrFail();
 				$Provider->status = 'onboarding';
 				$Provider->save();
 			}
-			
+
             return redirect()
                 ->route('admin.provider.document.index', $provider)
                 ->with('flash_success', 'Driver document has been deleted');
@@ -253,55 +253,55 @@ class ProviderDocumentResource extends Controller
                 ->with('flash_error', 'Driver service not found!');
         }
     }
-    
+
     public function get_provider_document_upload(Request $request, $provider,$id) {
-		
+
 	    try {
-			
+
             $Provider = Provider::where('id',$provider)->get();
 		    $Document = Document::where('id',$id)->get();
 			if( ! $Document ) {
 				throw new  Exception('Driver document not found!');
 			}
-			
+
             return view('admin.providers.document.create', compact('Document','Provider'));
         } catch (Exception $e) {
             return redirect()
                 ->route('admin.provider.document.index', $provider)
                 ->with('flash_error', $e->getMessage() );
         }
-		
+
 	}
 	public function edit_provider_document_upload(Request $request, $provider,$id) {
-		
+
 	    try {
-			
+
             $Document = ProviderDocument::where('provider_id', $provider)->where('document_id', $id)->first();
-			
+
 			if( ! $Document ) {
 				throw new  Exception('Driver document not found!');
 			}
-			
+
             return view('admin.providers.document.editdata', compact('Document'));
         } catch (Exception $e) {
             return redirect()
                 ->route('admin.provider.document.index', $provider)
                 ->with('flash_error', $e->getMessage() );
         }
-		
+
 	}
 
 
 	public function provider_document_upload(Request $request,$provider ) {
-		
-	    
+
+
         $this->validate($request, [
                 'document' 		=> 'required|mimes:jpg,jpeg,png,pdf',
 				'expiry_date'   => 'required'
             ]);
 
-        
-       
+
+
             ProviderDocument::create([
                     'url' => $request->document->store('provider/documents'),
                     'provider_id' => $request->provider_id,
@@ -309,25 +309,25 @@ class ProviderDocumentResource extends Controller
                     'status' => 'ASSESSING',
                     'expires_at' =>  Carbon::parse($request->expiry_date),
                 ]);
-        
+
         return redirect()
                 ->route('admin.provider.document.index', $provider)->with('flash_success', 'Driver document has been inserted.');;
-        
-		
+
+
 	}
 	public function update_provider_document_upload(Request $request,$provider,$id ) {
-		
-       
+
+
         try {
-			
+
             $Document = ProviderDocument::where('provider_id', $provider)->where('document_id', $id)->first();
-			
+
 			if( ! $Document ) {
-			    
+
 				throw new  Exception('Driver document not found!');
 			}
 			$Document->url = $request->document->store('provider/documents');
-			
+
 			$Document->expires_at = $request->expiry_date;
 			$Document->status = 'ASSESSING';
 			$Document->save();
@@ -335,7 +335,7 @@ class ProviderDocumentResource extends Controller
                     //'url' => $request->document->store('provider/documents'),
                     'expires_at' => $request->expiry_date,
                     'status' => 'ASSESSING',
-					
+
 					]);*/
 
             return redirect()
@@ -346,8 +346,8 @@ class ProviderDocumentResource extends Controller
                 ->route('admin.provider.document.index', $provider)
                 ->with('flash_error', $e->getMessage() );
         }
-        
-		
+
+
 	}
-	
+
 }

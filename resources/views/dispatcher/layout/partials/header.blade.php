@@ -4,7 +4,7 @@
 	<nav class="navbar navbar-default" style="border-bottom: 1px solid #dfdfdf">
 		<div class="container-fluid">
 				<a class="navbar-brand"  href="{{url('/dispatcher')}}" style="padding:0;">
-					<img src="{{ url(Setting::get('site_logo')) }}" style="max-width: 100%;vertical-align: top;height: 32px;margin-top: 14px;" />
+{{--					<img src="{{ url(Setting::get('site_logo')) }}" style="max-width: 100%;vertical-align: top;height: 32px;margin-top: 14px;" />--}}
 				</a>
 				<?php $url=url()->current();
 				      $path = substr($url, strrpos($url, '/') + 1); ?>
@@ -36,17 +36,17 @@
 		                        <a  href="{{ route('dispatcher.closeTicket') }}">Close Ticket </a>
 		                     </div>
 		                  </div>
-		                  
+
 		               </div>
 		            </li>
-		            
+
 			</ul>
 				</div>
 			<div class="sid_post_ab">
 				<ul id="sid_nav">
 					<li class="sid_li">
 						<span class="avatar box-32 bg-img" style="background-image: url({{asset('asset/admin/avatar.jpg')}})"></span>
-						
+
 						<div class="sid_dropdown animated fadeInUp hd_div">
 							<a  href="{{route('dispatcher.profile')}}"><i class="ti-user mr-0-5"></i> Profile </a>
 							<a  href="{{route('dispatcher.password')}}"><i class="ti-settings mr-0-5"></i> Change Password </a>
@@ -59,7 +59,7 @@
 							</form>
 						</div>
 					</li>
-					
+
 				</ul>
 			</div>
 

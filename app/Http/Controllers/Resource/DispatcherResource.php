@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Resource;
 
-use App\Dispatcher;
+use App\Models\Dispatcher;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Controller;
@@ -40,7 +40,7 @@ class DispatcherResource extends Controller
      */
     public function store(Request $request)
     {
-        
+
         $this->validate($request, [
             'name' => 'required|max:255',
             'mobile' => 'digits_between:6,13',
@@ -57,7 +57,7 @@ class DispatcherResource extends Controller
 
             return back()->with('flash_success','Dispatcher Details Saved Successfully');
 
-        } 
+        }
 
         catch (Exception $e) {
             return back()->with('flash_error', 'Dispatcher Not Found');
@@ -103,7 +103,7 @@ class DispatcherResource extends Controller
         if(Setting::get('demo_mode', 0) == 1) {
             return back()->with('flash_error', 'Disabled for demo purposes! Please contact us at info@rommoz.com');
         }
-        
+
 
         $this->validate($request, [
             'name' => 'required|max:255',
@@ -117,8 +117,8 @@ class DispatcherResource extends Controller
             $dispatcher->mobile = $request->mobile;
             $dispatcher->save();
 
-            return redirect()->route('admin.dispatcher.index')->with('flash_success', 'Dispatcher Updated Successfully');    
-        } 
+            return redirect()->route('admin.dispatcher.index')->with('flash_success', 'Dispatcher Updated Successfully');
+        }
 
         catch (ModelNotFoundException $e) {
             return back()->with('flash_error', 'Dispatcher Not Found');
@@ -136,12 +136,12 @@ class DispatcherResource extends Controller
         if(Setting::get('demo_mode', 0) == 1) {
             return back()->with('flash_error', 'Disabled for demo purposes! Please contact us at info@rommoz.com');
         }
-        
+
 
         try {
             Dispatcher::find($id)->delete();
             return back()->with('message', 'Dispatcher deleted successfully');
-        } 
+        }
         catch (Exception $e) {
             return back()->with('flash_error', 'Dispatcher Not Found');
         }

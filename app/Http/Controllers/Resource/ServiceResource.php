@@ -5,14 +5,14 @@ namespace App\Http\Controllers\Resource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Package;
+use App\Models\Package;
 use Setting;
 use Exception;
 use App\Helpers\Helper;
-use App\Zones;
-use App\ServiceType;
-use App\PeakAndNight;
-use App\FareSetting;
+use App\Models\Zones;
+use App\Models\ServiceType;
+use App\Models\PeakAndNight;
+use App\Models\FareSetting;
 
 class ServiceResource extends Controller
 {
@@ -22,7 +22,7 @@ class ServiceResource extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-    { 
+    {
         $services = ServiceType::all();
         if($request->ajax()) {
             return $services;
@@ -40,15 +40,15 @@ class ServiceResource extends Controller
     {
         return view('admin.service.create');
     }
-    
-    
+
+
     public function allocation()
     {
-        
+
         $services = ServiceType::select('id','name')->whereNotIn('name',['Pool'])->get();
         $fare = FareSetting::select('id','fare_plan_name','from_km','upto_km')->get();
         $zones = Zones::orderBy('created_at' , 'desc')->get();
-        
+
         return view('admin.service.allocation',compact('services','fare','zones'));
     }
 
@@ -65,8 +65,8 @@ class ServiceResource extends Controller
         }
 
 		// var_dump( $request->all() );
-		
-		
+
+
         $this->validate($request, [
             'name' => 'required|max:255',
             'capacity' => 'required|numeric',
@@ -120,7 +120,7 @@ class ServiceResource extends Controller
     {
         try {
 		       $service = ServiceType::findOrFail($id);
-			
+
             return view('admin.service.edit',compact('service'));
         } catch (ModelNotFoundException $e) {
             return back()->with('flash_error', 'Service Type Not Found');
@@ -135,8 +135,8 @@ class ServiceResource extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    { 
-        
+    {
+
          $this->validate($request, [
             'name' => 'required|max:255',
             'capacity' => 'required|numeric',
@@ -164,9 +164,9 @@ class ServiceResource extends Controller
             $service->capacity = $request->capacity;
             $service->description = $request->description;
             $service->save();
-            return redirect()->route('admin.service.index')->with('flash_success', 'Service Type Updated Successfully'); 
-            // return redirect('admin/allocation_list')->with('flash_success','Updated successfully');   
-        } 
+            return redirect()->route('admin.service.index')->with('flash_success', 'Service Type Updated Successfully');
+            // return redirect('admin/allocation_list')->with('flash_success','Updated successfully');
+        }
 
         catch (ModelNotFoundException $e) {
             return back()->with('flash_error', 'Service Type Not Found');
@@ -183,12 +183,12 @@ class ServiceResource extends Controller
             // 'two_passanger_percent' => 'numeric|min:1',
             // 'one_passanger_percent' => 'numeric|min:1',
             'image' => 'mimes:ico,png'
-            
+
         ]);
 
         try {
 
-            $package = Package::findOrFail($request->id);           
+            $package = Package::findOrFail($request->id);
 
             $package->name = $request->name;
             $package->provider_name = $request->provider_name;
@@ -203,8 +203,8 @@ class ServiceResource extends Controller
             $package->one_passanger_percent = "".$request->one_passanger_percent;
             $package->save();
 
-            return redirect()->route('admin.service.index')->with('flash_success', 'Service Type Updated Successfully');    
-        } 
+            return redirect()->route('admin.service.index')->with('flash_success', 'Service Type Updated Successfully');
+        }
 
         catch (ModelNotFoundException $e) {
             return back()->with('flash_error', 'Service Type Not Found');
@@ -222,7 +222,7 @@ class ServiceResource extends Controller
         if(Setting::get('demo_mode', 0) == 1) {
             return back()->with('flash_error','Disabled for demo purposes! Please contact us at info@rommoz.com');
         }
-        
+
         try {
             ServiceType::find($id)->delete();
             return back()->with('message', 'Service Type deleted successfully');

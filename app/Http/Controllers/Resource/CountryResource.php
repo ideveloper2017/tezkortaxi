@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Resource;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Country;
-use App\State;
-use App\City;
+use App\Models\Country;
+use App\Models\State;
+use App\Models\City;
 class CountryResource extends Controller
 {
     /**
@@ -19,8 +19,8 @@ class CountryResource extends Controller
         $countries = Country::all();
         return view('admin.location.countries',compact('countries'));
     }
-    
-   
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -40,11 +40,11 @@ class CountryResource extends Controller
      */
     public function store(Request $request)
     {
-        
+
 
     }
 
-    
+
     /**
      * Display the specified resource.
      *
@@ -89,7 +89,7 @@ class CountryResource extends Controller
                 return back()->with('flash_error', 'Something went wrong');
             }
         }catch(\Exception $e){
-           return back()->with('flash_error', 'Something went wrong'); 
+           return back()->with('flash_error', 'Something went wrong');
         }
     }
 

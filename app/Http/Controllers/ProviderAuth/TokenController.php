@@ -17,9 +17,9 @@ use Notification;
 use Validator;
 use Socialite;
 use App\Helpers\Helper;
-use App\Provider;
-use App\ProviderDevice;
-use App\ProviderService;
+use App\Models\Provider;
+use App\Models\ProviderDevice;
+use App\Models\ProviderService;
 
 class TokenController extends Controller
 {
@@ -28,8 +28,8 @@ class TokenController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    
-    
+
+
     public function checkEmail(Request $request){
         $this->validate($request, [
             'email' => 'required'
@@ -38,10 +38,10 @@ class TokenController extends Controller
             if($pr != 0){
                 return response()->json(['status'=>0,'msg'=>'The email has already been taken.']);
             }else{
-                return response()->json(['status'=>1,'msg'=>'You can use this email.']); 
+                return response()->json(['status'=>1,'msg'=>'You can use this email.']);
             }
     }
-    
+
      public function checkMobile(Request $request){
         $this->validate($request, [
             'mobile' => 'required'
@@ -50,11 +50,11 @@ class TokenController extends Controller
         if($pr != 0){
             return response()->json(['status'=>0,'msg'=>'The mobile number has already been taken.']);
         }else{
-            return response()->json(['status'=>1,'msg'=>'You can use this mobile number.']); 
+            return response()->json(['status'=>1,'msg'=>'You can use this mobile number.']);
         }
     }
-    
-    
+
+
      public function register(Request $request)
     {
         $this->validate($request, [
@@ -66,11 +66,11 @@ class TokenController extends Controller
                 'email' => 'required|email|max:255|unique:providers',
                 'mobile' => 'required',
                 'password' => 'required|min:6',
-               
+
             ]);
 
         try{
-            
+
              $pr = Provider::where('mobile',$request->mobile)->count();
             if($pr != 0){
 
@@ -79,7 +79,7 @@ class TokenController extends Controller
 
             $Provider = $request->all();
             $Provider['password'] = bcrypt($request->password);
-          
+
             $Provider = Provider::create($Provider);
 
             if(Setting::get('demo_mode', 0) == 1) {
@@ -99,7 +99,7 @@ class TokenController extends Controller
                     'token' => $request->device_token,
                     'type' => $request->device_type,
                 ]);
-            //sendMail('Registration',$request->email,$request->first_name,'Registration'); 
+            //sendMail('Registration',$request->email,$request->first_name,'Registration');
             return $Provider;
 
 
@@ -109,7 +109,7 @@ class TokenController extends Controller
             }
             return abort(500);
         }
-        
+
     }
 
     /**
@@ -129,25 +129,25 @@ class TokenController extends Controller
                 //'logged_in' => 'required'
             ]);
 
-        Config::set('auth.providers.users.model', 'App\Provider');
-        
+        Config::set('auth.providers.users.model', 'App\Models\Provider');
+
         $credentials = $request->only('email', 'password');
         $User = Provider::with('service', 'device')->where('email',$request->email)->first();
         try {
-            
+
             if (! $token = JWTAuth::attempt($credentials)) {
                 return response()->json(['error' => 'The email address or password you entered is incorrect.'], 401);
             }
-            
+
             // if(isset($User->device) && $User->device->udid != $request->device_id){
-                
+
             //     return response()->json(['error' => 'Provider is not allowed to login on multiple devices .'], 401);
             // }
             /*Provider::where('id',Auth::user()->id)->update([
-        
+
                 'logged_in' => $request->logged_in,
             ]);*/
-            
+
         } catch (JWTException $e) {
             return response()->json(['error' => 'Something went wrong, Please try again later!'], 500);
         }
@@ -155,16 +155,16 @@ class TokenController extends Controller
         $User->access_token = $token;
         $User->currency = Setting::get('currency', '$');
         $User->sos = Setting::get('sos_number', '911');
-        
+
         if($User->device) {
             ProviderDevice::where('id',$User->device->id)->update([
-        
+
                 'udid' => $request->device_id,
                 'token' => $request->device_token,
                 'type' => $request->device_type,
             ]);
-            
-            
+
+
         } else {
             ProviderDevice::create([
                     'provider_id' => $User->id,
@@ -172,9 +172,9 @@ class TokenController extends Controller
                     'token' => $request->device_token,
                     'type' => $request->device_type,
                 ]);
-            
+
         }
-        
+
         return response()->json($User);
     }
 
@@ -186,8 +186,8 @@ class TokenController extends Controller
 
     public function logout(Request $request)
     {
-        
-      
+
+
         try {
             ProviderDevice::where('provider_id', $request->id)->delete();
             //Provider::where('id', $request->id)->where('logged_in',1)->update(['logged_in'=> 0]);
@@ -211,8 +211,8 @@ class TokenController extends Controller
                 'email' => 'required|email|exists:providers,email',
             ]);
 
-        try{  
-            
+        try{
+
             $provider = Provider::where('email' , $request->email)->first();
 
             // $otp = mt_rand(100000, 999999);
@@ -268,7 +268,7 @@ class TokenController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function facebookViaAPI(Request $request) { 
+    public function facebookViaAPI(Request $request) {
 
         $validator = Validator::make(
             $request->all(),
@@ -280,52 +280,52 @@ class TokenController extends Controller
                 'login_by' 		=>	'required|in:manual,facebook,google'
             ]
         );
-		
-        
+
+
         if($validator->fails()) {
             return response()->json(['status'=>false,'message' => $validator->messages()->all()]);
         }
 
-	   
+
         try{
-			
+
 			$first_name			=	$request->first_name;
 			$last_name			=	($request->last_name ) ? $request->last_name  : '';
 			$email				= 	$request->email;
 			$social_unique_id 	= 	$request->id;
 			$avatar 			=	$request->avatar;
 			$login_by			=	$request->login_by;
-			
+
 			$AuthUser 			=	Provider::where('email',  $email )->first();
-			
-            if($AuthUser){ 
-			 
+
+            if($AuthUser){
+
 				$AuthUser->social_unique_id		=	$social_unique_id;
 				$AuthUser->device_type			=	$request->device_type;
                 $AuthUser->device_token			=	$request->device_token;
                 $AuthUser->device_id			=	$request->device_id;
                 $AuthUser->login_by				=	"facebook";
-                $AuthUser->save(); 
-				
-            }else{   
-			
+                $AuthUser->save();
+
+            }else{
+
 				$AuthUser= new Provider();
 				$AuthUser->email			=	$email;
 				$AuthUser->first_name		= 	$first_name;
 				$AuthUser->last_name		= 	$last_name;
-				
-                
+
+
 				$AuthUser->password			=	bcrypt( $social_unique_id );
 				$AuthUser->social_unique_id	=	$social_unique_id;
 				$AuthUser->device_type		=	$request->device_type;
 				$AuthUser->device_token		=	$request->device_token;
 				$AuthUser->device_id		=	$request->device_id;
-				
+
 				$AuthUser->avatar			= 	 $avatar;
 				$AuthUser->login_by			=	"facebook";
-				
-                $AuthUser->save();	
-				
+
+                $AuthUser->save();
+
                 if(Setting::get('demo_mode', 0) == 1) {
                     $AuthUser->update(['status' => 'approved']);
                     ProviderService::create([
@@ -336,18 +336,18 @@ class TokenController extends Controller
                         'service_model' => 'Audi R8',
                     ]);
                 }
-            }    
-            if($AuthUser){ 
+            }
+            if($AuthUser){
                 $userToken = JWTAuth::fromUser($AuthUser);
                 $User = Provider::with('service', 'device')->find($AuthUser->id);
                 if($User->device) {
                     ProviderDevice::where('id',$User->device->id)->update([
-                        
+
                         'udid' => $request->device_id,
                         'token' => $request->device_token,
                         'type' => $request->device_type,
                     ]);
-                    
+
                 } else {
                     ProviderDevice::create([
                         'provider_id' => $User->id,
@@ -364,10 +364,10 @@ class TokenController extends Controller
                             'sos' => Setting::get('sos_number', '911')
                         ]);
             }else{
-				
+
                 return response()->json(['status'=>false,'message' => "Invalid credentials!"]);
-				
-            }  
+
+            }
         } catch (Exception $e) {
             return response()->json(['status'=>false,'message' => trans('api.something_went_wrong')]);
         }
@@ -378,7 +378,7 @@ class TokenController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function googleViaAPI(Request $request) { 
+    public function googleViaAPI(Request $request) {
 
         $validator = Validator::make(
             $request->all(),
@@ -390,13 +390,13 @@ class TokenController extends Controller
                 'login_by' => 'required|in:manual,facebook,google'
             ]
         );
-        
+
         if($validator->fails()) {
             return response()->json(['status'=>false,'message' => $validator->messages()->all()]);
         }
         $user = Socialite::driver('google')->stateless();
         $GoogleDrive = $user->userFromToken( $request->accessToken);
-       
+
         try{
             $GoogleSql = Provider::where('social_unique_id',$GoogleDrive->id);
             if($GoogleDrive->email !=""){
@@ -404,10 +404,10 @@ class TokenController extends Controller
             }
             $AuthUser = $GoogleSql->first();
             if($AuthUser){
-                $AuthUser->social_unique_id=$GoogleDrive->id;  
+                $AuthUser->social_unique_id=$GoogleDrive->id;
                 $AuthUser->login_by="google";
                 $AuthUser->save();
-            }else{   
+            }else{
                 $AuthUser["email"]=$GoogleDrive->email;
                 $name = explode(' ', $GoogleDrive->name, 2);
                 $AuthUser["first_name"]=$name[0];
@@ -428,18 +428,18 @@ class TokenController extends Controller
                         'service_model' => 'Audi R8',
                     ]);
                 }
-            }    
+            }
             if($AuthUser){
                 $userToken = JWTAuth::fromUser($AuthUser);
                 $User = Provider::with('service', 'device')->find($AuthUser->id);
                 if($User->device) {
                     ProviderDevice::where('id',$User->device->id)->update([
-                        
+
                         'udid' => $request->device_id,
                         'token' => $request->device_token,
                         'type' => $request->device_type,
                     ]);
-                    
+
                 } else {
                     ProviderDevice::create([
                         'provider_id' => $User->id,
@@ -457,7 +457,7 @@ class TokenController extends Controller
                         ]);
             }else{
                 return response()->json(['status'=>false,'message' => "Invalid credentials!"]);
-            }  
+            }
         } catch (Exception $e) {
             return response()->json(['status'=>false,'message' => trans('api.something_went_wrong')]);
         }

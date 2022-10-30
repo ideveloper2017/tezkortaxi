@@ -11,9 +11,7 @@ class  Zones extends Model
      *
      * @var array
      */
-
-	 protected $table = 'zones';
-
+    protected $table = 'zones';
     protected $fillable = [
         'name',
 		'coordinate',

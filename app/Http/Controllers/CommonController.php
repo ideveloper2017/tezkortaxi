@@ -4,34 +4,34 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Session;
-use App\ServiceType;
-use App\Provider;
-use App\ProviderDocument;
-use App\ProviderProfile;
-use App\PushNotification;
+use App\Models\ServiceType;
+use App\Models\Provider;
+use App\Models\ProviderDocument;
+use App\Models\ProviderProfile;
+use App\Models\PushNotification;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\SendPushNotification;
-use App\ProviderService;
+use App\Models\ProviderService;
 use \Carbon\Carbon;
 use DateTime;
-use App\Page;
-use App\ContactUs;
-use App\Complaint;
-use App\Blog;
-use App\LostItem;
-use App\User;
+use App\Models\Page;
+use App\Models\ContactUs;
+use App\Models\Complaint;
+use App\Models\Blog;
+use App\Models\LostItem;
+use AApp\Models\User;
 class CommonController extends Controller
 {
-   
+
 
     public function index(Request $request) {
-    	    
-		$data['services'] 	=	ServiceType::all();   
+
+		$data['services'] 	=	ServiceType::all();
 		//$details 				=	$this->getIpDetails();
 		//$data['services'] 		=	$details['services'];
 		//$data['ip_details']		=	$details['ip_details'];
 		$data['testimonials']	=	Testimonial::orderBy('id', 'desc')->take(8)->get();
-	
+
 		return view('index', ['data' => $data ]);
 	}
 
@@ -74,7 +74,7 @@ class CommonController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function password_update(Request $request){
-     
+
         $this->validate($request,[
             'email'     => 'required|email',
             'password' => 'min:6|required_with:password_confirmation|same:password_confirmation',
@@ -87,7 +87,7 @@ class CommonController extends Controller
             return back()->with('flash_error','Something Went Wrong!');
         }
     }
-    
+
     public function provider_password_update(Request $request){
         $this->validate($request,[
             'email'     => 'required|email',
@@ -99,41 +99,41 @@ class CommonController extends Controller
              return redirect('provider/login');
         } catch (Exception $e) {
             return back()->with('flash_error','Something Went Wrong!');
-        } 
+        }
     }
 
     public function contact(Request $request) {
         // dd($request->all());
         $json = array();
-        
+
         $this->validate($request,[
             'name'      => 'required',
             'email'     => 'required|email',
             'message'   => 'required',
-            
+
             ]);
-            
+
         try{
-            
+
             $message = new ContactUs();
             $message->name          =   $request->name;
             $message->email         =   $request->email;
             $message->message       =   $request->message;
-                                    
+
             $message->save();
-            
-            
+
+
             $json['success'] = ( $message->id ) ? true : false;
-        
+
             return redirect()->back()->with('message', 'We have received your request successfully.We will get back within 24 hours.');
-                
+
         } catch(Exception $e) {
-            
+
             return response()->json(['error' => trans('api.something_went_wrong')], 500);
-        
+
         }
-        
-    
+
+
     }
 
        public function complaint_form(Request $request) {
@@ -149,19 +149,19 @@ class CommonController extends Controller
             'transfer'   => 'required',
             'message'   => 'required',
             // 'phone'     => 'required',
-            
+
             ]);
-            
+
         try{
-            
+
             $message = new Complaint();
             $message->name          =   $request->name;
-            $message->email         =   $request->email;        
+            $message->email         =   $request->email;
             // $message->subject       =   $request->subject;
             $message->transfer       =   $request->transfer;
             $message->message       =   $request->message;
             //$message->type         =    $url[1];
-            
+
             // if ($request->hasFile('attachment')) {
             //     $file = $request->file('attachment');
             //     $name = time().'.'.$file->getClientOriginalExtension();
@@ -169,45 +169,45 @@ class CommonController extends Controller
             //     $file->move($destinationPath, $name);
             //     $message->attachment    =   $name;
             // }
-            
+
             $message->save();
-         
-            
+
+
             $json['success'] = ( $message->id ) ? true : false;
-        
+
         sendMail('Support',$request->email,$request->name,'New Query Received');
         return redirect()->back()->with('message', 'Query Saved Successfully');
-                
+
         } catch(Exception $e) {
-            
+
             return response()->json(['error' => trans('api.something_went_wrong')], 500);
-        
+
         }
-        
-    
+
+
     }
 
      public function sendMessage(Request $request) {
         $json = array();
-        
+
         $this->validate($request,[
             'name'      => 'required',
             'email'     => 'required|email',
             'subject'   => 'required',
             'message'   => 'required',
             'phone'     => 'required',
-            
+
             ]);
-            
+
         try{
-            
+
             $message = new ContactUs();
             $message->name          =   $request->name;
-            $message->email         =   $request->email;        
+            $message->email         =   $request->email;
             $message->subject       =   $request->subject;
             $message->message       =   $request->message;
             $message->phone         =   $request->phone;
-            
+
             if ($request->hasFile('attachment')) {
                 $file = $request->file('attachment');
                 $name = time().'.'.$file->getClientOriginalExtension();
@@ -215,78 +215,78 @@ class CommonController extends Controller
                 $file->move($destinationPath, $name);
                 $message->attachment    =   $name;
             }
-            
+
             $message->save();
-            
-            
+
+
             $json['success'] = ( $message->id ) ? true : false;
-        
+
         sendMail('Contact us',$request->email,$request->name,'New Query Received');
         return response()->json( $json );
-                
+
         } catch(Exception $e) {
-            
+
             return response()->json(['error' => trans('api.something_went_wrong')], 500);
-        
+
         }
-        
-    
+
+
     }
 
     public function lostItemForm(Request $request) {
         $json = array();
-        
+
         $this->validate($request,[
             'name'      => 'required',
             'email'     => 'required|email',
             'lost_item'   => 'required',
             'phone'     => 'required',
             ]);
-            
+
         try{
             $message = new LostItem();
             $message->name          =   $request->name;
-            $message->email         =   $request->email;        
+            $message->email         =   $request->email;
             $message->lost_item       =   $request->lost_item;
             $message->phone       =   $request->phone;
             $message->save();
             $json['success'] = ( $message->id ) ? true : false;
-        
+
         return response()->json( $json );
-                
+
         } catch(Exception $e) {
-            
+
             return response()->json(['error' => trans('api.something_went_wrong')], 500);
-        
+
         }
-    
+
     }
      public function blogs(Request $request){
           $blogs =Blog::orderBy('id','desc')->get();
-                    
-          return view('pages.blog',compact('blogs'));    
+
+          return view('pages.blog',compact('blogs'));
         }
 
         public function blog_detail($id){
         $blog_detail = Blog::where('id',$id)->first();
-          
+
             return view('pages.blogdetail',compact('blog_detail'));
     }
         public function fare_estimate()
     {
-        $services   = ServiceType::all(); 
+        $services   = ServiceType::all();
         $sessiondata = session()->all();
         return view('pages.fare_estimate', compact(['services', 'sessiondata']));
 
     }
-	
+
     public function ride_overview(){
         return $this->commonpage('ride-overview');
        }
 
     public function ride_safety(){
         return $this->commonpage('ride-safety');
-       
+
     }
     public function airports(){
        return $this->commonpage('airports');
@@ -332,22 +332,22 @@ class CommonController extends Controller
     // }
 
     // public function common($val,$page){
-     
-    //  $data = Page::select($locale.'_title',$locale.'_description')->where('slug',$val)->first(); 
-    //   return view('pages.'.$page,compact('data')); 
+
+    //  $data = Page::select($locale.'_title',$locale.'_description')->where('slug',$val)->first();
+    //   return view('pages.'.$page,compact('data'));
     // }
 
     public function helpPage()
-    {  
+    {
         $data =Page::where('en_title','faq')->get();
 
         return view('pages.help',compact('data'));
 
     }
     public function refund()
-    { 
+    {
         return view('pages.refund');
-        
+
     }
     public function user()
     {
@@ -368,7 +368,7 @@ class CommonController extends Controller
     }
 
     public function how_it_works()
-    { 
+    {
         $data =Page::where('en_title','how it work')->get();
 
         return view('pages.how_it_works',compact('data'));
@@ -376,12 +376,12 @@ class CommonController extends Controller
     }
 
     public function stories()
-    {   
+    {
 
         return view('pages.story');
 
     }
-    
+
     public function about_us() {
       return  $this->commonpage('about-us');
     }
@@ -409,20 +409,20 @@ class CommonController extends Controller
         $data = Page::select($locale.'_title',$locale.'_description')->where('slug',$val)->first();
         return view('pages.static',compact('data'));
     }
-    
-    
+
+
     public function download_page()
     {
         return view('downloadpage');
     }
-	
-	 
+
+
 
     // public function help()
     // {
-    //     return view('user.layout.help');		
+    //     return view('user.layout.help');
     // }
-    
+
     public function driver_story () {
 
         $providers = DB::table('providers')
@@ -433,14 +433,14 @@ class CommonController extends Controller
             ->paginate(4);
 
 
-        return view('user.layout.driver_story', compact('providers') );			
-    
+        return view('user.layout.driver_story', compact('providers') );
+
     }
 
 
     public function locale(Request $request ) {
 
-              
+
         if( $request->has('locale') ) {
 
             Session::put('locale', $request->input('locale', 'en')  );
@@ -454,18 +454,18 @@ class CommonController extends Controller
 
     public function calculate_price(Request $request ) {
 
-        
-        $services 	= ServiceType::all();    
+
+        $services 	= ServiceType::all();
         $ip 	=   \Request::getClientIp(true);
         $ip_details = json_decode(file_get_contents("http://www.geoplugin.net/json.gp?ip={$ip}"));
 
-        return view('user.layout.calculate_price', compact('services', 'ip_details' ) );	
+        return view('user.layout.calculate_price', compact('services', 'ip_details' ) );
     }
 
     public function searchingajax()
     {
         $allrequests  = DB::table('user_requests')->select('id','status','created_at')->where('status', 'SEARCHING')->get();
-        
+
         foreach($allrequests as $request)
         {
             $time = new \DateTime($request->created_at);
@@ -481,11 +481,11 @@ class CommonController extends Controller
             }
         }
     }
-    
+
     public function ajaxforofflineprovider(Request $request)
     {
         $allrequests  = DB::table('providers')->select('updated_at','id')->where('status','!=', 'riding')->get();
-        
+
         foreach($allrequests as $request)
         {
             $time = new \DateTime($request->updated_at);
@@ -499,13 +499,13 @@ class CommonController extends Controller
         }
         //return $expected;
     }
-    
+
     public function providerDocumentExpiryNotification(){
         $docs = ProviderDocument::with('provider','document')->where('expires_at','>=', Carbon::now()->toDateString())->get();
         foreach($docs as $doc){
            if(!empty($doc->provider) && !empty($doc->document)){
                $days = Carbon::parse($doc->expires_at)->diffInDays(Carbon::parse(Carbon::now()->toDateString()));
-              
+
                if($days<=$doc->document->expire){
                    $msg="Your document ".$doc->document->name." will expire in ".$days." days. Please update your document";
                    $title="Document Expiry Notification";
@@ -519,12 +519,12 @@ class CommonController extends Controller
                     $notification->expiration_date = Carbon::parse($doc->expires_at);
                     $notification->save();
                    (new SendPushNotification)->notifyProvider($doc->provider->id,$title,$msg,'admin','');
-                   
+
                }
-                  
+
            }
         }
-        
+
     }
 
 }

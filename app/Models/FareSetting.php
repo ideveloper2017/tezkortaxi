@@ -26,6 +26,6 @@ class FareSetting extends Model
     ];
      public function peakNight()
     {
-        return $this->hasMany('App\PeakAndNight','fare_setting_id');
+        return $this->hasMany('App\Models\PeakAndNight','fare_setting_id');
     }
 }

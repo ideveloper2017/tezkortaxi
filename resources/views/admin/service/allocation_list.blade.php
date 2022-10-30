@@ -31,7 +31,7 @@ use App\Models\ServiceType;
                         <td>{{ $index + 1 }}</td>
                         <td><a id="fareSetting">{{ $service->plan_name }}</a></td>
                         <td>{{ $service->service_name }}</td>
-                        <td>{{ $zonename['zone_name']}}</td>
+                        <td>{{ @$zonename['zone_name']}}</td>
                         <td>Active</td>
                         <td>
                             <form action="{{ route('admin.fare.settings.deletePKG') }}" method="POST">

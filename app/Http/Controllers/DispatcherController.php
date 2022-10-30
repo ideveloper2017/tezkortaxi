@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Log;
 use Setting;
-use Auth;
 use Exception;
 use Carbon\Carbon;
 use App\Helpers\Helper;
-use Session;
+
 
 use App\Models\User;
 use App\Models\Zones;
@@ -667,7 +668,7 @@ class DispatcherController extends Controller
 
         try{
 
-            Session::set('DispatcherUserId', $User->id);
+            Session::put('DispatcherUserId', $User?$User->id:0);
 			$service_type = $request->service_type;
 
 			if( $request->has('request_id') ) {
@@ -963,38 +964,24 @@ class DispatcherController extends Controller
             ]);
 
         try{
-
 			$result = Helper::getEstimatedFare( $request->all() );
-
 			if( isset($result['error']) ) {
 				throw new Exception( serialize(['error'=> $result['error'] ] ) );
 			}
-
 			if($request->ajax()) {
                 return response()->json( $result );
             }else{
                 return $result;
             }
 
-
-
-
-
-
         } catch(Exception $e) {
-
 			$errors = unserialize($e->getMessage());
-
 			if($request->ajax()) {
                 return response()->json($errors , 500);
             }else{
                 return back()->with('flash_error', $errors['error'] );
             }
-
-
         }
-
-
     }
 
      public function singleTrip(Request $request)
@@ -1028,12 +1015,9 @@ class DispatcherController extends Controller
 
 		$data_zones = array();
 		$zones	=	Zones::all()->toArray();
-
 		if( $zones ) {
-
 			foreach( $zones  as  $zone ) {
-
-				$drivers	= DB::table('providers')
+				$drivers= DB::table('providers')
 										->join('provider_zone', 'provider_zone.driver_id', '=', 'providers.id')
 										->join('provider_services', 'provider_services.provider_id', '=', 'providers.id')
 										->select(DB::raw('providers.*, DATE_FORMAT(provider_zone.created_at , "%b %d %h:%i %p") as enter_time, provider_zone.id as driver_position, provider_services.service_number, provider_services.service_model, provider_services.status as provider_status') )

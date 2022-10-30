@@ -1,5 +1,5 @@
-<?php use App\Zones;
-use App\ServiceType; ?>
+<?php use App\Models\Zones;
+use App\Models\ServiceType; ?>
 @extends('admin.layout.base')
 
 @section('title', 'Update Cab Allocation')
@@ -12,7 +12,7 @@ use App\ServiceType; ?>
 
             <h5 style="margin-bottom: 2em;"><i class="ti-layout-media-overlay-alt-2"></i>&nbsp; Update Map Vehicle</h5><hr>
             <form class="form-horizontal" action="{{route('admin.cabAllocation_update')}}" method="GET" enctype="multipart/form-data" role="form">
-                {{ csrf_field() }}                
+                {{ csrf_field() }}
                 <input type="hidden" name="id" value="{{$package->id}}">
                 <div class="form-group row hidable" style="display:none">
                     <label for="provider_name" class="col-xs-12 col-form-label">One Person Fare Percentage</label>
@@ -37,7 +37,7 @@ use App\ServiceType; ?>
                         </select>
                     </div>
                 </div>
-                
+
                 <div class="form-group row">
                     <label for="provider_name" class="col-xs-12 col-form-label">Fare Plan</label>
                     <div class="col-xs-10">
@@ -53,7 +53,7 @@ use App\ServiceType; ?>
                 <div class="col-xs-10">
                     <div class="form-group hide row" id="provider_list">
                     <label htmlfor="provider_id">Select Zone</label>
-                    <input name="provider_id" type="hidden" value="{{$zonename['id']}}" />                    
+                    <input name="provider_id" type="hidden" value="{{$zonename['id']}}" />
                         <div class="provider_fl_wrapper">
                             <div class="form-control" id="provider_wrapper">
                                 <div class="dr_search_txt">Select Zone</div>
@@ -89,7 +89,7 @@ use App\ServiceType; ?>
                             <div class="col-xs-12 col-sm-6 offset-md-6 col-md-3">
                                 <a href="{{ route('admin.allocation_list') }}" class="btn btn-danger shadow-box btn-block">Cancel</a>
                             </div>
-                          
+
                         </div>
                     </div>
                 </div>
@@ -116,20 +116,20 @@ use App\ServiceType; ?>
     }
 
     //Document ready function define here
-    $(function () {     
+    $(function () {
 
         $('#provider_wrapper').on('click', function() {
             $('#dr_list_wrapper').slideToggle('slow');
         });
-        
+
         $(document).on('click','#dr_list .dr_item',function() {
             $('#provider_list input[name=provider_id]').val($(this).attr('pr_id'));
             $('#provider_list .dr_search_txt').text($(this).text());
             $('#dr_list_wrapper').slideUp('slow');
         });
-        
+
     });
-    
+
 
 </script>
 @endsection
@@ -187,7 +187,7 @@ div#dr_list {
 </style>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function(event) { 
+    document.addEventListener("DOMContentLoaded", function(event) {
         detectCategory()
     });
     function detectCategory(){

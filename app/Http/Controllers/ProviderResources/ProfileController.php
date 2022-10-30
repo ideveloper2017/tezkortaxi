@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\ProviderResources;
 
-use App\BankAccount;
-use App\Document;
-use App\ProviderDocument;
-use App\ServiceType;
+use App\Models\BankAccount;
+use App\Models\Document;
+use App\Models\ProviderDocument;
+use App\Models\ServiceType;
 use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -17,12 +17,12 @@ use Setting;
 use Storage;
 use Exception;
 use Carbon\Carbon;
-use App\Provider;
-use App\ProviderProfile;
-use App\UserRequests;
-use App\ProviderService;
-use App\Fleet;
-use App\UserRequestPayment;
+use App\Models\Provider;
+use App\Models\ProviderProfile;
+use App\Models\UserRequests;
+use App\Models\ProviderService;
+use App\Models\Fleet;
+use App\Models\UserRequestPayment;
 
 class ProfileController extends Controller
 {
@@ -80,17 +80,17 @@ class ProfileController extends Controller
                 'city' => 'max:255',
                 'country' => 'max:255',
                 'postal_code' => 'max:255',
-                'description'   => 'max:1000', 
+                'description'   => 'max:1000',
             ]);
 
         try {
 
             $Provider = Auth::user();
 
-            if($request->has('first_name')) 
+            if($request->has('first_name'))
                 $Provider->first_name = $request->first_name;
 
-            // if($request->has('last_name')) 
+            // if($request->has('last_name'))
             //     $Provider->last_name = $request->last_name;
 
             if ($request->has('mobile'))
@@ -205,17 +205,17 @@ class ProfileController extends Controller
                 'city' => 'max:255',
                 'country' => 'max:255',
                 'postal_code' => 'max:255',
-                'description'   => 'max:1000', 
+                'description'   => 'max:1000',
             ]);
 
         try {
 
             $Provider = Auth::user();
 
-            if($request->has('first_name')) 
+            if($request->has('first_name'))
                 $Provider->first_name = $request->first_name;
 
-            if($request->has('last_name')) 
+            if($request->has('last_name'))
                 $Provider->last_name = $request->last_name;
 
             if ($request->has('mobile'))
@@ -253,7 +253,7 @@ class ProfileController extends Controller
             $Provider->save();
 
             return $Provider;
-            
+
         }
 
         catch (ModelNotFoundException $e) {
@@ -300,7 +300,7 @@ class ProfileController extends Controller
             ]);
 
         $Provider = Auth::user();
-        
+
         if($Provider->service) {
             $Provider->service->update(['status' => $request->service_status]);
         } else {
@@ -342,17 +342,17 @@ class ProfileController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-     
+
     /*public function target(Request $request)
     {
-       
+
         try{
- 
+
             $Providers = Provider::all();
 
             foreach($Providers as $index => $Provider)
             {
-                
+
                 if($Provider->id==Auth::user()->id)
                 {
                     $Rides = UserRequests::where('provider_id',$Provider->id)
@@ -360,15 +360,15 @@ class ProfileController extends Controller
                             ->get()->pluck('id');
 
                     $Providers[1]->rides_count = $Rides->count();
-    
+
                     $Providers[1]->payment = UserRequestPayment::whereIn('request_id', $Rides)
                                     ->select(\DB::raw(
-                                       'SUM(ROUND(fixed) + ROUND(distance)) as overall, SUM(ROUND(commision)) as commission' 
+                                       'SUM(ROUND(fixed) + ROUND(distance)) as overall, SUM(ROUND(commision)) as commission'
                                     ))->get();
                 }
-                
+
             }
-            
+
             return response()->json([
                     'rides' => $Rides,
                     'rides_count' => $Providers,
@@ -385,13 +385,13 @@ class ProfileController extends Controller
     public function target(Request $request)
     {
         try {
-            
+
             $Ridesdata = UserRequests::where('provider_id', Auth::user()->id)
                     ->where('status', 'COMPLETED')
                     //->where('created_at', '>=', Carbon::today())
                     ->with('payment', 'service_type')
                     ->get();
-                    
+
             $Rides = UserRequests::where('provider_id',Auth::user()->id)
                             ->where('status','<>','CANCELLED')
                             ->get()->pluck('id');
@@ -400,21 +400,21 @@ class ProfileController extends Controller
 
            /* $Providers  = UserRequestPayment::whereIn('request_id', $Rides)
                             ->select(\DB::raw(
-                               'SUM(ROUND(fixed) + ROUND(distance)) as overall, SUM(ROUND(commision)) as commission' 
+                               'SUM(ROUND(fixed) + ROUND(distance)) as overall, SUM(ROUND(commision)) as commission'
                             ))->get();
                             */
         $Earn = UserRequestPayment::whereHas('request', function($query) use ($request) {
                                 $query->where('provider_id', Auth::user()->id);
                             })
                         ->sum('total');
-                        
+
         $commision = UserRequestPayment::whereHas('request', function($query) use ($request) {
                                 $query->where('provider_id', Auth::user()->id);
                             })
                         ->sum('commision');
         $totalEarn =    $Earn-$commision;
-        $totalEarn? : 0;  
-            
+        $totalEarn? : 0;
+
             //dd($Providers);
             return response()->json([
                     'rides' => $Ridesdata,

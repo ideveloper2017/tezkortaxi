@@ -5,8 +5,9 @@ namespace App\Models;
 use App\Notifications\ProviderResetPassword;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class Provider extends Authenticatable
+class Provider extends Authenticatable implements JWTSubject
 {
     use Notifiable;
 
@@ -151,5 +152,20 @@ class Provider extends Authenticatable
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ProviderResetPassword($token));
+    }
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }

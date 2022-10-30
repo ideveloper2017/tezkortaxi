@@ -178,7 +178,7 @@ $services = get_all_service_types();
 
             <div class="logo" >
 
-{{--            <a href="{{ url('/') }}"><img src="{{ url(Setting::get('site_logo')) }}" height="100%" style="margin-top: 7%;"/></a>                    --}}
+            <a href="{{ url('/') }}"><img src="{{ url(Setting::get('site_logo')) }}" height="100%" style="margin-top: 7%;"/></a>
 
             </div>
 

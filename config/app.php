@@ -185,6 +185,12 @@ return [
         /*
          * Package Service Providers...
          */
+        Laravel\Passport\PassportServiceProvider::class,
+        Laravel\Socialite\SocialiteServiceProvider::class,
+        anlutro\LaravelSettings\ServiceProvider::class,
+        Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
+        Barryvdh\TranslationManager\ManagerServiceProvider::class,
+        // Davibennun\LaravelPushNotification\LaravelPushNotificationServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -195,12 +201,9 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-        Laravel\Passport\PassportServiceProvider::class,
-        Laravel\Socialite\SocialiteServiceProvider::class,
-        anlutro\LaravelSettings\ServiceProvider::class,
-//        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
-        Barryvdh\TranslationManager\ManagerServiceProvider::class,
-       // Davibennun\LaravelPushNotification\LaravelPushNotificationServiceProvider::class,
+
+
+
 
     ],
 

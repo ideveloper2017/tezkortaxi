@@ -11,11 +11,11 @@ use Setting;
 use Exception;
 use \Carbon\Carbon;
 
-use App\User;
-use App\UserLocationType;
-use App\Provider;
-use App\ServiceType;
-use App\UserRequests;
+use App\Models\User;
+use App\Models\UserLocationType;
+use App\Models\Provider;
+use App\Models\ServiceType;
+use App\Models\UserRequests;
 
 class LiveTrip extends Controller
 {
@@ -37,7 +37,7 @@ class LiveTrip extends Controller
                 return array_merge($this->users(),$this->driver(),$this->ongoing(),$this->complet());
 
         }
-        
+
     }
     public function users(){
         $data =  UserLocationType::rightJoin('users','users.id','=','user_location_types.user_id')
@@ -136,11 +136,11 @@ class LiveTrip extends Controller
                  'View Profile</a> '.
                 '</h5>'.
             '</div>'.
-            
+
             '</div>'.
             '</div>';
     }
-    
+
     public function driverDetails($id){
         $provider = Provider::find($id);
         $details = "https://maps.googleapis.com/maps/api/geocode/json?latlng={$provider->latitude},{$provider->longitude}&key=".env('GOOGLE_MAP_KEY');
@@ -167,11 +167,11 @@ class LiveTrip extends Controller
                  'View Profile</a> '.
                 '</h5>'.
             '</div>'.
-            
+
             '</div>'.
             '</div>';
     }
-    
+
     public function ongoingDetail($id){
         $rq =  UserRequests::find($id);
         $user = User::find($rq->user_id);
@@ -299,11 +299,11 @@ class LiveTrip extends Controller
                      '<h5 style="text-align:center;">'.
                     '</h5>'.
                 '</div>'.
-                
+
                 '</div>'.
                 '</div>';
         }
-        
+
         public function driverDetailsD($id){
             $provider = Provider::find($id);
             $details = "https://maps.googleapis.com/maps/api/geocode/json?latlng={$provider->latitude},{$provider->longitude}&key=".env('GOOGLE_MAP_KEY');
@@ -328,13 +328,13 @@ class LiveTrip extends Controller
                      '<h5 style="text-align:center;">'.
                     '</h5>'.
                 '</div>'.
-                
+
                 '</div>'.
                 '</div>';
         }
-        
 
-        
+
+
         public function ongoingDetailD($id){
             $rq =  UserRequests::find($id);
             $user = User::find($rq->user_id);

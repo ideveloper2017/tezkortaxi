@@ -27,7 +27,9 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-//        Passport::();
+//        if (!$this->app->routesAreCached()) {
+//            Passport::routes();
+//        }
 
         Passport::tokensExpireIn(Carbon::now()->addDays(15));
 

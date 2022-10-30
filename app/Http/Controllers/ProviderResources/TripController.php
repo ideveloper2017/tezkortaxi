@@ -10,24 +10,24 @@ use Setting;
 use Carbon\Carbon;
 use App\Helpers\Helper;
 use App\Http\Controllers\SendPushNotification;
-use App\Chat;
-use App\Chatroom;
-use App\User;
-use App\Zones;
-use App\FareSetting;
-use App\PeakAndNight;
-use App\Admin;
-use App\PushNotification;
-use App\Promocode;
-use App\UserRequests;
-use App\RequestFilter;
-use App\PromocodeUsage;
-use App\ProviderService;
-use App\UserRequestRating;
-use App\UserRequestPayment;
-use App\ServiceType;
-use App\WithdrawalMoney;
-use App\ProviderZone;
+use App\Models\Chat;
+use App\Models\Chatroom;
+use App\Models\User;
+use App\Models\Zones;
+use App\Models\FareSetting;
+use App\Models\PeakAndNight;
+use App\Models\Admin;
+use App\Models\PushNotification;
+use App\Models\Promocode;
+use App\Models\UserRequests;
+use App\Models\RequestFilter;
+use App\Models\PromocodeUsage;
+use App\Models\ProviderService;
+use App\Models\UserRequestRating;
+use App\Models\UserRequestPayment;
+use App\Models\ServiceType;
+use App\Models\WithdrawalMoney;
+use App\Models\ProviderZone;
 use Mail;
 use DB;
 
@@ -46,7 +46,7 @@ class TripController extends Controller
                 $Provider = Auth::user();
             } else {
                 $Provider = Auth::guard('provider')->user();
-            }   
+            }
 
             $provider = $Provider->id;
 
@@ -73,8 +73,8 @@ class TripController extends Controller
             $trips = UserRequests::where('provider_id',$provider)->count();
             $query = "SELECT SUM(user_request_payments.fixed + user_request_payments.distance + user_request_payments.tax ) as revenue FROM `user_requests` LEFT JOIN user_request_payments on user_requests.id=user_request_payments.request_id where provider_id=".$provider;
             $rev = collect(DB::select($query))->first();
-            $totalride = UserRequests::where('provider_id',$provider)->pluck('id');       
-            $totalEarning = UserRequestPayment::whereIn('request_id', $totalride)->sum('total');       
+            $totalride = UserRequests::where('provider_id',$provider)->pluck('id');
+            $totalEarning = UserRequestPayment::whereIn('request_id', $totalride)->sum('total');
             $commission = UserRequestPayment::whereIn('request_id', $totalride)->sum('commision');
             $earnings = $totalEarning-$commission;
             $earnings = number_format($earnings, 2);
@@ -84,7 +84,7 @@ class TripController extends Controller
                 $point[0] = $request->latitude;
                 $point[1] = $request->longitude;
                 $zone_id =	$this->getLatlngZone_id($point);
-                
+
                 $Provider->update([
                         'latitude' => $request->latitude,
                         'longitude' => $request->longitude,
@@ -95,7 +95,7 @@ class TripController extends Controller
                       'zone_id' =>  $zone_id
                     ]
                 );
-               
+
             }
 
             $Timeout = Setting::get('provider_select_timeout', 180);
@@ -137,7 +137,7 @@ class TripController extends Controller
         try{
             $UserRequest = UserRequests::findOrFail($request->request_id);
             $Cancellable = ['SEARCHING', 'ACCEPTED', 'ARRIVED', 'STARTED', 'CREATED','SCHEDULED'];
-        
+
             if(!in_array($UserRequest->status, $Cancellable)) {
                 return back()->with(['flash_error' => 'Cannot cancel request at this stage!']);
             }
@@ -174,14 +174,14 @@ class TripController extends Controller
                 'rating' => 'required|integer|in:1,2,3,4,5',
                 'comment' => 'max:255',
             ]);
-    
+
         try {
 
             $UserRequest = UserRequests::where('id', $id)
                                         ->where('status', 'COMPLETED')
                                         ->firstOrFail();
             $review = UserRequestRating::where('request_id',$id)->count();
-            
+
             if($review==0) {
                 UserRequestRating::create([
                     'provider_id' => $UserRequest->provider_id,
@@ -218,7 +218,7 @@ class TripController extends Controller
 
             ProviderService::where('provider_id',$UserRequest->provider_id)->update(['status' =>'active']);
 
-            // Send Push Notification to Provider 
+            // Send Push Notification to Provider
             $average = UserRequestRating::where('provider_id', $UserRequest->provider_id)->avg('provider_rating');
 
             $UserRequest->user->update(['rating' => $average]);
@@ -244,7 +244,7 @@ class TripController extends Controller
                     ->get();
 
             if(!empty($Jobs)){
-                
+
                 $s_map_icon = asset('asset/img/map-start2.png');
                 $d_map_icon = asset('asset/img/marker-stop.png');
                 foreach ($Jobs as $key => $value) {
@@ -267,13 +267,13 @@ class TripController extends Controller
     }
 
 
-        
+
         // Verify OTP
         public function verifyOtp(Request $request){
-            
+
 
             $this->validate($request,[
-                    'request_id'    => 'required|numeric',  
+                    'request_id'    => 'required|numeric',
                     'otp'   => 'required|numeric',
                 ]);
 
@@ -285,14 +285,14 @@ class TripController extends Controller
                 }else{
                     return response()->json(["status" => 0, "msg" => 'Unverifed']);
                 }
-                
+
             } catch(Exception $e) {
-                
+
                 return response()->json(['error' => $e->getMessage() ], 500);
-            
+
             }
         }
-        
+
     /**
      * Get the trip history of the provider
      *
@@ -344,7 +344,7 @@ class TripController extends Controller
             if($UserRequest->status != "SEARCHING") {
                 return response()->json(['error' => 'Request already under progress!']);
             }
-            
+
             $UserRequest->provider_id = Auth::user()->id;
 
             if($UserRequest->schedule_at != ""){
@@ -373,7 +373,7 @@ class TripController extends Controller
                 $UserRequest->save();
 
             }   else{
-                
+
                 $otp = mt_rand(1000, 9999);
                 $UserRequest->verification_code = $otp;
                 $UserRequest->status = "STARTED";
@@ -396,7 +396,7 @@ class TripController extends Controller
 
             if($UnwantedRequest->count() > 0){
                 $UnwantedRequest->delete();
-            }  
+            }
 
             // Send Push Notification to User
             (new SendPushNotification)->RideAccepted($UserRequest->user_id);
@@ -419,7 +419,7 @@ class TripController extends Controller
      */
     public function update(Request $request, $id)
     {
-               
+
         $this->validate($request, [
             'status' => 'required|in:ACCEPTED,STARTED,ARRIVED,PICKEDUP,DROPPED,PAYMENT,COMPLETED',
         ]);
@@ -437,12 +437,12 @@ class TripController extends Controller
             } else {
                 $UserRequest->status = $request->status;
             }
-			
+
 			if($request->status == 'ARRIVED'){
-				// Send Push Notification to User    
+				// Send Push Notification to User
 				(new SendPushNotification)->Arrived($UserRequest);
 			}
-		
+
 
             if($request->status == 'PICKEDUP'){
                 $UserRequest->started_at = Carbon::now();
@@ -455,11 +455,11 @@ class TripController extends Controller
                 $UserRequest->save();
                 $UserRequest->with('user')->findOrFail($id);
                 $UserRequest->invoice = $this->invoice($id);
-            
+
 				// Send Push Notification to User
 				(new SendPushNotification)->Dropped($UserRequest->user_id);
-		
-				 $user = [ 
+
+				 $user = [
 							'email'		=>	$UserRequest->user->email,
 							'name'		=>	$UserRequest->user->first_name,
 							'total_fee'	=>	Setting::get('currency').' '.abs( $UserRequest->invoice->total ),
@@ -468,17 +468,17 @@ class TripController extends Controller
 							's_address'	=>	$UserRequest->s_address,
 							'd_address'	=>	$UserRequest->d_address,
 							'date'		=>	date('d-m-Y'),
-		  
+
 						];
-		  
+
 
 				Mail::send('emails.invoice', ['user' => $user], function ($m) use ($user) {
 					$m->from(config('mail.from.address' ), '');
 					$m->to($user['email'], $user['name'])->subject('ILYFT - INVOICE');
 				});
-				
+
 			}
-			
+
             return $UserRequest;
 
         } catch (ModelNotFoundException $e) {
@@ -499,7 +499,7 @@ class TripController extends Controller
         $UserRequest = UserRequests::find($id);
 
         try {
-            $this->reject_provider($UserRequest->id);   
+            $this->reject_provider($UserRequest->id);
             return $UserRequest->with('user')->get();
 
         } catch (ModelNotFoundException $e) {
@@ -508,8 +508,8 @@ class TripController extends Controller
             return response()->json(['error' => 'Connection Error']);
         }
     }
-    
-    
+
+
     public function reject_provider($request_id) {
 
         try {
@@ -522,8 +522,8 @@ class TripController extends Controller
         $RequestFilter = RequestFilter::where('provider_id',Auth::user()->id)
                         ->where('request_id', $UserRequest->id)
                         ->delete();
-                        
-       
+
+
         try {
 
             $next_provider = RequestFilter::where('request_id', $UserRequest->id)
@@ -537,7 +537,7 @@ class TripController extends Controller
 
             // incoming request push to provider
             (new SendPushNotification)->IncomingRequest($next_provider->provider_id);
-            
+
         } catch (ModelNotFoundException $e) {
 
             UserRequests::where('id', $UserRequest->id)->update(['status' => 'CANCELLED']);
@@ -549,7 +549,7 @@ class TripController extends Controller
             (new SendPushNotification)->ProviderNotAvailable($UserRequest->user_id);
         }
     }
-    
+
 
     public function assign_next_provider($request_id) {
 
@@ -563,9 +563,9 @@ class TripController extends Controller
         /*$RequestFilter = RequestFilter::where('provider_id', $UserRequest->provider_id)
                         ->where('request_id', $UserRequest->id)
                         ->delete();*/
-                        
-        DB::table('request_filters')->where('provider_id',$UserRequest->provider_id)->where('request_id',$UserRequest->id)->take(1)->delete();                
-       
+
+        DB::table('request_filters')->where('provider_id',$UserRequest->provider_id)->where('request_id',$UserRequest->id)->take(1)->delete();
+
         try {
 
             $next_provider = RequestFilter::where('request_id', $UserRequest->id)
@@ -579,7 +579,7 @@ class TripController extends Controller
 
             // incoming request push to provider
             (new SendPushNotification)->IncomingRequest($next_provider->provider_id);
-            
+
         } catch (ModelNotFoundException $e) {
 
             UserRequests::where('id', $UserRequest->id)->update(['status' => 'CANCELLED']);
@@ -601,7 +601,7 @@ class TripController extends Controller
             $tax_percentage = Setting::get('tax_percentage',10);
             $commission_percentage = Setting::get('commission_percentage',10);
             $service_type = ServiceType::findOrFail($UserRequest->service_type_id);
-            
+
             $kilometer = $UserRequest->distance;
             $Fixed = $service_type->fixed;
             $Distance = 0;
@@ -613,24 +613,24 @@ class TripController extends Controller
             $trip_started_time      =   strtotime($UserRequest->started_at);
             $trip_finished_time     =   strtotime($UserRequest->finished_at);
             $trip_time_in_minute    =   round( ( $trip_finished_time - $trip_started_time ) / 60, 2 );
-            
+
             $minutes = $trip_time_in_minute;
 
             if($service_type->calculator == 'MIN') {
                 $Distance = $service_type->minute * $minutes;
-                
+
             } else if($service_type->calculator == 'HOUR') {
                 $Distance = $service_type->minute * round( $minutes / 60, 2 );
-                
+
             } else if($service_type->calculator == 'DISTANCE') {
                 $Distance = ($kilometer - $service_type->distance )  * $service_type->price;
-                
+
             } else if($service_type->calculator == 'DISTANCEMIN') {
                 $Distance = ( ( $kilometer - $service_type->distance ) * $service_type->price) + ($service_type->minute * $minutes);
-                
+
             } else if($service_type->calculator == 'DISTANCEHOUR') {
                 $Distance = ( ( $kilometer - $service_type->distance ) * $service_type->price) + ($service_type->minute * round(  $minutes / 60, 2 ) );
-                
+
             } else {
                 $Distance =  ( $kilometer - $service_type->distance )  * $service_type->price;
             }
@@ -652,18 +652,18 @@ class TripController extends Controller
                 $Surge = (Setting::get('surge_percentage')/100) * $Total;
                 $Total += $Surge;
             }*/
-            
+
             $calculatefare = $Distance + $Fixed;
             $Commision     = $calculatefare * ( $commission_percentage/100 );
             $finalfare     = $calculatefare - $Discount;
             $Tax           = $calculatefare * ($tax_percentage/100);
             $Total         = $Commision + $finalfare + $Tax;
-            
+
             if($UserRequest->surge){
                 $Surge = (Setting::get('surge_percentage')/100) * $Total;
                 $Total += $Surge;
             }
-            
+
             if($Total < 0){
                 $Total = 0.00; // prevent from negative value
             }
@@ -694,7 +694,7 @@ class TripController extends Controller
                         User::where('id',$UserRequest->user_id)->update(['wallet_balance' => 0 ]);
                         $Payment->total = abs($Payable);
 
-                        // charged wallet money push 
+                        // charged wallet money push
                         (new SendPushNotification)->ChargedWalletMoney($UserRequest->user_id,currency($Wallet));
 
                     } else {
@@ -703,7 +703,7 @@ class TripController extends Controller
                         $WalletBalance = $Wallet - $Total;
                         User::where('id',$UserRequest->user_id)->update(['wallet_balance' => $WalletBalance]);
                         $Payment->wallet = $Total;
-                        
+
                         $Payment->payment_id = 'WALLET';
                         $Payment->payment_mode = $UserRequest->payment_mode;
                         $Payment->paid = 1;
@@ -712,7 +712,7 @@ class TripController extends Controller
                         $UserRequest->status = 'COMPLETED';
                         $UserRequest->save();
 
-                        // charged wallet money push 
+                        // charged wallet money push
                         (new SendPushNotification)->ChargedWalletMoney($UserRequest->user_id,currency($Total));
                     }
                 }
@@ -725,15 +725,15 @@ class TripController extends Controller
             $Payment->save();
             /*$deletedDuplicatePayment = UserRequestPayment::where('request_id',$Payment->request->id)->orderBy('id','DESC')->take(1);
             $deletedDuplicatePayment->delete();*/
-			
+
         return $Payment;
 
         } catch (ModelNotFoundException $e) {
             return false;
         }
     }
-    
-    
+
+
     public function invoice($request_id)
     {
         try {
@@ -741,7 +741,7 @@ class TripController extends Controller
             $tax_percentage = Setting::get('tax_percentage',10);
             $commission_percentage = Setting::get('commission_percentage',10);
             $service_type = ServiceType::findOrFail($UserRequest->service_type_id);
-            
+
             $kilometer = $UserRequest->distance;
             $Fixed = $service_type->fixed;
             $Distance = 0;
@@ -750,7 +750,7 @@ class TripController extends Controller
             $Wallet = 0;
             $Surge = 0;
             $Commision = 0;
-            
+
             //new
             $tax_percentage = Setting::get('tax_percentage');
             $currency = Setting::get('currency');
@@ -765,11 +765,11 @@ class TripController extends Controller
             $trip_started_time      =   strtotime($UserRequest->started_at);
             $trip_finished_time     =   strtotime($UserRequest->finished_at);
             $trip_time_in_minute    =   round( ( $trip_finished_time - $trip_started_time ) / 60, 2 );
-            
+
             $minutes = $trip_time_in_minute;
 
              // condition
-      
+
 		    $fareSetting = FareSetting::where('from_km','<=',round($kilometer,0))
 		    	->where('upto_km','>=',round($kilometer,0))
 		    	//->where('peak_hour','YES')
@@ -788,12 +788,12 @@ class TripController extends Controller
 		    		});
 
 		    	}else{
-		    		$peakAndNight = $peakAndNight->where(['day'=>$currentDay]);	
+		    		$peakAndNight = $peakAndNight->where(['day'=>$currentDay]);
 		    	}
 		    	$peakAndNight = $peakAndNight->where('fare_setting_id',$fareSetting->id);
 		    	$peakAndNight = $peakAndNight->orderBy('id','DESC')
 		    	->first();
-		    
+
 		    	if(!empty($peakAndNight)){
 
 		    		$amount = (($service_type->fixed+($kilometer*$fareSetting->price_per_km))*1); //double price on two way ride
@@ -801,14 +801,14 @@ class TripController extends Controller
 		    		$extra_tax_price = ( $peakAndNight->fare_in_percentage/100 ) * $amount;
 		    		$amount = $amount + $extra_tax_price;
 		    		$tax_price = ( $tax_percentage/100 ) * $amount;
-		    		$Total = $amount + $Commision +$tax_price;	
+		    		$Total = $amount + $Commision +$tax_price;
 		    	}else{
 		    			// fare setting applied without peak day and time
 		    			$amount = (($service_type->fixed+($kilometer*$fareSetting->price_per_km))*1); //double price on two way ride
 		    			$Commision     = $amount * ( $commission_percentage/100 );
 		    			$tax_price = ( $tax_percentage/100 ) * $amount;
 		    			$Total = $amount + $Commision + $tax_price;
-		    	         
+
 		    	}
 		    } else{
 				// else condition
@@ -830,50 +830,50 @@ class TripController extends Controller
 	            $Total = $price + $Commision + $tax_price;
 				//
 		    }
-		    
-		    
+
+
 		    if($service_type->calculator == 'MIN') {
                 $Distance = $service_type->minute * $minutes;
-                
+
             } else if($service_type->calculator == 'HOUR') {
                 $Distance = $service_type->minute * round( $minutes / 60, 2 );
-                
+
             } else if($service_type->calculator == 'DISTANCE') {
                 $Distance = ($kilometer - $service_type->distance )  * $service_type->price;
-                
+
             } else if($service_type->calculator == 'DISTANCEMIN') {
                 $Distance = ( ( $kilometer - $service_type->distance ) * $service_type->price) + ($service_type->minute * $minutes);
-                
+
             } else if($service_type->calculator == 'DISTANCEHOUR') {
                 $Distance = ( ( $kilometer - $service_type->distance ) * $service_type->price) + ($service_type->minute * round(  $minutes / 60, 2 ) );
-                
+
             } else {
                 $Distance =  ( $kilometer - $service_type->distance )  * $service_type->price;
             }
-            
+
             if($PromocodeUsage = PromocodeUsage::where('user_id',$UserRequest->user_id)->where('status','ADDED')->orderBy('id', 'DESC')->first()){
                 if($Promocode  = Promocode::find($PromocodeUsage->promocode_id)){
-                    
+
                     $total_discount =  ($Total * $Promocode->discount)/100;
-					$Total = $Total - $total_discount; 
+					$Total = $Total - $total_discount;
                     $PromocodeUsage->status = 'USED';
                     $PromocodeUsage->save();
                 }
             }
-            
+
             /*if ( $request->has('promo_code') ) {
 				// Apply  promo code
 				if($promo_code =  Promocode::where('promo_code', $request->promo_code)->first() ) {
 					$total_discount =  ($total * $promo_code->discount)/100;
-					$total = $total - $total_discount; 
+					$total = $total - $total_discount;
 				}
 			}*/
-            
+
             if($UserRequest->surge){
                 $Surge = (Setting::get('surge_percentage')/100) * $Total;
                 $Total += $Surge;
             }
-            
+
             if($Total < 0){
                 $Total = 0.00; // prevent from negative value
             }
@@ -904,7 +904,7 @@ class TripController extends Controller
                         User::where('id',$UserRequest->user_id)->update(['wallet_balance' => 0 ]);
                         $Payment->total = abs($Payable);
 
-                        // charged wallet money push 
+                        // charged wallet money push
                         (new SendPushNotification)->ChargedWalletMoney($UserRequest->user_id,currency($Wallet));
 
                     } else {
@@ -913,7 +913,7 @@ class TripController extends Controller
                         $WalletBalance = $Wallet - $Total;
                         User::where('id',$UserRequest->user_id)->update(['wallet_balance' => $WalletBalance]);
                         $Payment->wallet = $Total;
-                        
+
                         $Payment->payment_id = 'WALLET';
                         $Payment->payment_mode = $UserRequest->payment_mode;
                         $Payment->paid = 1;
@@ -922,7 +922,7 @@ class TripController extends Controller
                         $UserRequest->status = 'COMPLETED';
                         $UserRequest->save();
 
-                        // charged wallet money push 
+                        // charged wallet money push
                         (new SendPushNotification)->ChargedWalletMoney($UserRequest->user_id,currency($Total));
                     }
                 }
@@ -935,7 +935,7 @@ class TripController extends Controller
             $Payment->save();
             /*$deletedDuplicatePayment = UserRequestPayment::where('request_id',$Payment->request->id)->orderBy('id','DESC')->take(1);
             $deletedDuplicatePayment->delete();*/
-			
+
         return $Payment;
 
         } catch (ModelNotFoundException $e) {
@@ -955,7 +955,7 @@ class TripController extends Controller
             ]);
 
         if($request->ajax()) {
-            
+
             $Jobs = UserRequests::where('id',$request->request_id)
                                 ->where('provider_id', Auth::user()->id)
                                 ->with('payment','service_type','user','rating')
@@ -989,7 +989,7 @@ class TripController extends Controller
      */
 
     public function upcoming_trips() {
-    
+
         try{
             $UserRequests = UserRequests::ProviderUpcomingRequest(Auth::user()->id)->get();
             if(!empty($UserRequests)){
@@ -1108,7 +1108,7 @@ class TripController extends Controller
                 $scheduled_rides = UserRequests::where('status','SCHEDULED')->where('provider_id', Auth::user()->id)->count();
 
                 return response()->json([
-                    'rides' => $rides, 
+                    'rides' => $rides,
                     'revenue' => $revenue,
                     'cancel_rides' => $cancel_rides,
                     'scheduled_rides' => $scheduled_rides,
@@ -1134,7 +1134,7 @@ class TripController extends Controller
 
             if($request->ajax()) {
                 return response()->json([
-                    'contact_number' => Setting::get('contact_number',''), 
+                    'contact_number' => Setting::get('contact_number',''),
                     'contact_email' => Setting::get('contact_email','')
                      ]);
             }
@@ -1145,14 +1145,14 @@ class TripController extends Controller
             }
         }
     }
-	
-	
-	
+
+
+
 	 public function test(){
 
 		$UserRequest = UserRequests::with(['user' ,'payment'])->findOrFail(379);
-		
-		 $user = [ 
+
+		 $user = [
 					'email'		=>	$UserRequest->user->email,
 					'name'		=>	$UserRequest->user->first_name,
 					'total_fee'	=>	Setting::get('currency').' '.abs( 45.45 ),
@@ -1162,31 +1162,31 @@ class TripController extends Controller
 					'd_address'	=>	$UserRequest->d_address,
 					'date'		=>	date('d-m-Y'),
 				];
-  
+
 
 		Mail::send('emails.invoice', ['user' => $user], function ($m) use ($user) {
 			$m->from('support@rommoz.com', '');
 			$m->to($user['email'], $user['name'])->subject('pintaxi - INVOICE');
 		});
 
-	
-        
+
+
     }
-    
+
     public function review(Request $request)
     {
         $this->validate($request, [
                 'provider_id' => 'required|integer',
             ]);
-            
+
         try{
 
             $review = UserRequestRating::select('user_rating','user_comment','created_at')->where('provider_id',Auth::user()->id)
                     ->orderBy('id', 'DESC')
                     ->get();
-            
+
             return response()->json(['Data' =>$review]);
-            
+
         } catch(Exception $e) {
             return response()->json(['error' => "Something Went Wrong"]);
         }
@@ -1195,15 +1195,15 @@ class TripController extends Controller
 	public function getChat(Request $request){
 
 		$this->validate($request, [
-				'request_id' => 'required',              
+				'request_id' => 'required',
 			]);
-	
+
 		$userName = Auth::user()->first_name;
 		if($request->has('message') && $request->has('provider_id') && $request->has('user_id') && $request->has('type')){
 
 			//push notification
 			(new SendPushNotification)->chatNotify($request->user_id,$request->message,$request->request_id,$userName);
-		   
+
             $message = '$request->message';
 			$msgCreate = Chat::Create([
 				'request_id'	=>	$request->request_id,
@@ -1218,27 +1218,27 @@ class TripController extends Controller
 
 		return response()->json(['status'=>1,"data"=>$r]);
 	}
-	
+
 	public function dummyNotify()
 	{
 	    $msg= (new SendPushNotification)->chatNotify(43,'dummy',13,'john doe');
 	    $msg2 = (new SendPushNotification)->chatNotifyProvider(80,'dummy',13,'john doe');
 	    return $msg2;
 	}
-	
+
 	public function notification(Request $request)
     {
-        $id = Auth::user()->id;    
+        $id = Auth::user()->id;
         try{
-            
+
             $notifications = PushNotification::where('type',2)->whereRaw("find_in_set($id,to_user)")->whereDate('expiration_date', '>=', date('Y-m-d'))->orderBy('id','desc')->get();
             return response()->json(['Data' =>$notifications]);
-            
+
         }   catch(Exception $e) {
             return response()->json(['error' => "Something Went Wrong"]);
         }
     }
-    
+
     public function addNotification(Request $request)
     {
         $this->validate($request, [
@@ -1246,10 +1246,10 @@ class TripController extends Controller
             'title'=>'required',
             'notification_text'=>'required'
         ]);
-        
-            
+
+
         try {
-                    
+
             $notification = new PushNotification;
             $notification->to_user = $request->to_user;
             $notification->type = $request->type;
@@ -1260,17 +1260,17 @@ class TripController extends Controller
             $notification->expiration_date = $request->expiration_date;
             $notification->zone = $request->zone;
             if($request->hasFile('image')) {
-                
+
                 $notification['image'] = $request->image->store('user/profile');
             }
             $notification->save();
             return response()->json(['message' =>'Notification saved.']);
-                
+
         }   catch(Exception $e) {
             return response()->json(['error' => "Something Went Wrong."]);
         }
     }
-    
+
     public function withdrawRequestList(Request $request){
 
         $Earn = UserRequestPayment::whereHas('request', function($query) use ($request) {
@@ -1282,67 +1282,67 @@ class TripController extends Controller
                             })
                         ->sum('commision');
         $totalEarn =    $Earn-$commision;
-        $totalEarn? : 0;            
+        $totalEarn? : 0;
 
         $r =  WithdrawalMoney::where('provider_id',Auth::user()->id)->whereIn('status',['APPROVED','WAITING'])->orderBy('id','desc')->get();
-        
+
       //  $takenAmount =  WithdrawalMoney::where('provider_id',Auth::user()->id)->where('status','APPROVED')->sum('amount');
       $takenAmount =  WithdrawalMoney::where('provider_id',Auth::user()->id)->whereIn('status',['APPROVED','WAITING'])->sum('amount');
-    
+
 
         if(count($r) != 0){
             $res = $r;
             $status = 1;
             $afterdeduct = ($totalEarn-$takenAmount);
             $amount = $afterdeduct;
-    
+
         }   else{
             $res = 0;
             $status = 0;
             $amount = $totalEarn;
         }
-    
+
         return response()->json(["status"=>$status,"data"=>$res,'totalEarn'=>round($amount,2)]);
 }
-    
+
     public function withdrawalRequest(Request $request){
 
         $this->validate($request, [
             'provider_id' => 'required|int',
             'bank_account_id' => 'required',
             'amount' => 'required|int',  //bank token btok_we32e3
-           
+
         ]);
-   
+
         $Earn = UserRequestPayment::whereHas('request', function($query) use ($request) {
                                 $query->where('provider_id', Auth::user()->id);
                             })
                         ->sum('total');
-                        
+
         $commision = UserRequestPayment::whereHas('request', function($query) use ($request) {
                                 $query->where('provider_id', Auth::user()->id);
                             })
                         ->sum('commision');
         $totalEarn =    $Earn-$commision;
-        $totalEarn? : 0;  
+        $totalEarn? : 0;
 
         $r =  WithdrawalMoney::where('provider_id',Auth::user()->id)->whereIn('status',['APPROVED','WAITING'])->orderBy('id','desc')->get();
-        
+
         $takenAmount =  WithdrawalMoney::where('provider_id',Auth::user()->id)->whereIn('status',['APPROVED','WAITING'])->sum('amount');
-    
+
 
         if(count($r) != 0){
             $res = $r;
             $afterdeduct = ($totalEarn-$takenAmount);
             $amount = $afterdeduct;
-    
+
         }   else{
             $res = 0;
             $amount = $totalEarn;
         }
-   
-    if($request->amount <= $amount){              
-   $r = WithdrawalMoney::Create($request->all()); 
+
+    if($request->amount <= $amount){
+   $r = WithdrawalMoney::Create($request->all());
    $status = 1;
    $msg = 'successfully requested for withdrawal';
 }
@@ -1356,12 +1356,12 @@ else
 
     if($request->ajax()) {
                    return response()->json(['status'=>$status,'data'=>$r,'msg'=>$msg]);
-                } 
+                }
 }
 
 	public function getLatlngZone_id( $point ) {
 		$id = 0;
-		$zones = Zones::all(); 
+		$zones = Zones::all();
 		if( count( $zones ) ) {
 			foreach( $zones as $zone ) {
 				if( $zone->coordinate ) {
@@ -1371,13 +1371,13 @@ else
 						$new_coord = explode(",", $coord );
 						$polygon[] = $new_coord;
 					}
-					
+
 					if ( Helper::pointInPolygon($point, $polygon) ) {
 						return $zone->id;
 					}
 				}
 			}
-		}		
-		return $id;		
+		}
+		return $id;
 	}
 }

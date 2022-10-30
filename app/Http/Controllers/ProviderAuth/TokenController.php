@@ -133,20 +133,21 @@ class TokenController extends Controller
 
         $credentials = $request->only('email', 'password');
         $User = Provider::with('service', 'device')->where('email',$request->email)->first();
+
         try {
 
-            if (! $token = JWTAuth::attempt($credentials)) {
+            if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->json(['error' => 'The email address or password you entered is incorrect.'], 401);
             }
 
-            // if(isset($User->device) && $User->device->udid != $request->device_id){
+             if(isset($User->device) && $User->device->udid != $request->device_id){
 
-            //     return response()->json(['error' => 'Provider is not allowed to login on multiple devices .'], 401);
-            // }
-            /*Provider::where('id',Auth::user()->id)->update([
+                 return response()->json(['error' => 'Provider is not allowed to login on multiple devices .'], 401);
+             }
+            Provider::where('id',Auth::user()->id)->update([
 
                 'logged_in' => $request->logged_in,
-            ]);*/
+            ]);
 
         } catch (JWTException $e) {
             return response()->json(['error' => 'Something went wrong, Please try again later!'], 500);

@@ -711,7 +711,7 @@ class DispatcherController extends Controller
 
 			$UserRequest = new UserRequests;
 			$UserRequest->booking_id = Helper::generate_booking_id();
-			$UserRequest->user_id = $User->id;
+			$UserRequest->user_id = $User?$User->id:0;
 			$UserRequest->dispatcher_id =(isset($request->dispatcher_id) && !empty($request->dispatcher_id)) ?$request->dispatcher_id : 0;   ;
 
 

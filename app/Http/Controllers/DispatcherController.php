@@ -166,8 +166,8 @@ class DispatcherController extends Controller
 			$Request->save();
 
 
-			Log::useFiles(storage_path().'/logs/dispatcher.log');
-			Log::info( $Request->booking_id.' id is assigned to co-partner by dispatcher panel!');
+			//Log::useFiles(storage_path().'/logs/dispatcher.log');
+			//Log::info( $Request->booking_id.' id is assigned to co-partner by dispatcher panel!');
 
 			$json['trip'] = $Request;
 			return response()->json($json);

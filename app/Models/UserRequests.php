@@ -70,7 +70,7 @@ class UserRequests extends Model
      */
     public function service_type()
     {
-        return $this->belongsTo('App\Models\ServiceType');
+        return $this->belongsTo(ServiceType::class,'service_type_id','id');
     }
 
     /**

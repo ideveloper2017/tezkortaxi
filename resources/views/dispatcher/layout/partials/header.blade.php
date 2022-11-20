@@ -4,7 +4,7 @@
 	<nav class="navbar navbar-default" style="border-bottom: 1px solid #dfdfdf">
 		<div class="container-fluid">
 				<a class="navbar-brand"  href="{{url('/dispatcher')}}" style="padding:0;">
-{{--					<img src="{{ url(Setting::get('site_logo')) }}" style="max-width: 100%;vertical-align: top;height: 32px;margin-top: 14px;" />--}}
+					<img src="{{ Setting::get('site_logo') }}" style="max-width: 100%;vertical-align: top;height: 32px;margin-top: 14px;" />
 				</a>
 				<?php $url=url()->current();
 				      $path = substr($url, strrpos($url, '/') + 1); ?>

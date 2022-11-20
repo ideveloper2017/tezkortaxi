@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Auth;
 use Setting;
 use Validator;
 
-use App\Provider;
-use App\ProviderService;
-use App\Page;
+use App\Models\Provider;
+use App\Models\ProviderService;
+use App\Models\Page;
 
 class RegisterController extends Controller
 {

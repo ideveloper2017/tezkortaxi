@@ -262,7 +262,7 @@ class TripController extends Controller
             }
             return $Jobs;
         } catch(Exception $e) {
-            return response()->json(['error' => "Something Went Wrong"]);
+            return response()->json(['error' => $e->getMessage().' '.$e->getLine()]);
         }
     }
 

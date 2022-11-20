@@ -121,13 +121,13 @@
 									<div class="col-xs-12">
 										<div class="form-group">
 											<label htmlfor="provider_id">Fare (Driver)</label>
-											<input type="text" readonly class="form-control" name="estimated_price" id="estimated_price"></input>
+											<input type="text" readonly class="form-control" name="estimated_price" id="estimated_price" value="0"></input>
 										</div>
 									</div>
 									<div class="col-xs-12">
 										<div class="form-group">
 											<label htmlfor="provider_id">Fare (Customer)</label>
-											<input type="text"  class="form-control" name="amount_customer" id="amount_customer"></input>
+											<input type="text"  class="form-control" name="amount_customer" id="amount_customer" value="0"></input>
 										</div>
 									</div>
 								</div>

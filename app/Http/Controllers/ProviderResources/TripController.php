@@ -40,7 +40,7 @@ class TripController extends Controller
      */
     public function index(Request $request)
     {
-        dd('hii');
+        //dd('hii');
         try{
             if($request->ajax()) {
                 $Provider = Auth::user();
@@ -1012,7 +1012,7 @@ class TripController extends Controller
         }
 
         catch (Exception $e) {
-            return response()->json(['error' => trans('api.something_went_wrong')]);
+            return response()->json(['error' => $e->getMessage().' '.$e->getLine()]);
         }
     }
 

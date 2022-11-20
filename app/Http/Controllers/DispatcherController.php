@@ -665,19 +665,15 @@ class DispatcherController extends Controller
             }
         }
 
-
         try{
-
             Session::put('DispatcherUserId', $User?$User->id:0);
 			$service_type = $request->service_type;
-
 			if( $request->has('request_id') ) {
 				$UserRequest = UserRequests::where('id' , $request->request_id )->where('status', 'SEARCHING')->first();
 				$req_filters = DB::table('request_filters')->where('request_id', $UserRequest->id )->get()->pluck('id')->toArray();
 				if( $req_filters ) {
 					DB::table('request_filters')->whereIn('id', $req_filters)->delete();
 				}
-
 				$UserRequest->delete();
 			}
 
@@ -685,11 +681,7 @@ class DispatcherController extends Controller
 			$point[0]	=	$request->s_latitude;
 			$point[1]	=	$request->s_longitude;
 			$zone_id	=	Helper::getLatlngZone_id( $point );
-
 			$Providers	=	Helper::availableProviders($service_type, $point[0], $point[1]);
-
-
-
 			if( ! $request->has('provider_auto_assign') ) {
 				$availables_drivers = $Providers->pluck('id')->toArray();
 				if( ! in_array($request->provider_id , $availables_drivers) ) {
@@ -700,8 +692,6 @@ class DispatcherController extends Controller
 					}
 				}
 			}
-
-
 
 			$req_url = "https://maps.googleapis.com/maps/api/directions/json?origin=".$request->s_latitude.",".$request->s_longitude."&destination=".$request->d_latitude.",".$request->d_longitude."&mode=driving&key=".env('GOOGLE_MAP_KEY');
 			$details =  (array) Helper::getDataByCurl( $req_url );

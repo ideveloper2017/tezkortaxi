@@ -59,8 +59,8 @@
 									<label for="d_address">Drop Location</label>
 									<input type="hidden" name="dispatcher_id" id="dispatcher_id" value="{{ $user_id }}">
 									<input type="text"  name="d_address" class="form-control" id="d_address" placeholder="Drop Location" required></input>
-									<input type="hidden" name="d_latitude" id="d_latitude" value="0"></input>
-									<input type="hidden" name="d_longitude" id="d_longitude" value="0"></input>
+									<input type="hidden" name="d_latitude" id="d_latitude" value="0">
+									<input type="hidden" name="d_longitude" id="d_longitude" value="0">
 									<input type="hidden" name="request_id" id="request_id" value="0"/>
 								</div>
 								<div class="form-group">
@@ -93,12 +93,12 @@
 									</div>
 								@endif
 							</div>
-							<div class="col-xs-12">
-								<div class="form-group">
-									<label for="distance">Distance(KM)</label>
-									<input type="text" class="form-control"  name="distance" id="distance" value="0"></input>
-								</div>
-							</div>
+{{--							<div class="col-xs-12">--}}
+{{--								<div class="form-group">--}}
+{{--									<label for="distance">Distance(KM)</label>--}}
+{{--									<input type="text" class="form-control"  name="distance" id="distance" value="0"></input>--}}
+{{--								</div>--}}
+{{--							</div>--}}
 							<div class="col-xs-12">
 								<div class="form-group">
 									<label for="distance">Add Note</label>

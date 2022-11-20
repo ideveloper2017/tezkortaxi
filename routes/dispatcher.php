@@ -19,7 +19,7 @@ Route::get('get-details/{type}/{id}', 'LiveTrip@getDetailsD')->name('live.detail
 
 
 Route::group(['as' => 'dispatcher.', 'prefix' => 'dispatcher'], function () {
-Route::get('/', 'DispatcherController@index')->name('index');
+//Route::get('/', 'DispatcherController@index')->name('index');
 Route::post('/', 'DispatcherController@store')->name('store');
 Route::post('/getFare', 'DispatcherController@get_ride_fare')->name('getFare');
 Route::get('/trips', 'DispatcherController@trips')->name('trips');
@@ -43,4 +43,3 @@ Route::get('/closeTicket', 'DispatcherController@closeTicket')->name('closeTicke
 Route::get('/openTicketDetail/{id}', 'DispatcherController@openTicketDetail')->name('openTicketDetail');
 Route::patch('/transfer/{id}', 'DispatcherController@transfer')->name('transfer');
 Route::get('/test','DispatcherController@test');
- 

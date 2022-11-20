@@ -729,7 +729,7 @@ class DispatcherController extends Controller
 				$UserRequest->corporate_id = 0;
 			}
 
-			$UserRequest->estimated_fare 	=	$request->estimated_price;
+			///$UserRequest->estimated_fare 	=	$request->estimated_price;
 			$UserRequest->special_note 		=	$request->special_note;
 			$UserRequest->s_latitude 		=	$request->s_latitude;
 			$UserRequest->s_longitude 		=	$request->s_longitude;

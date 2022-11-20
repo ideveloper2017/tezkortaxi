@@ -1074,7 +1074,7 @@ function makeListHtml(props, result ) {
 			}
 
 			if( data[i].status == 'COMPLETED' || data[i].status == 'ACCEPTED' || data[i].status == 'STARTED' || data[i].status == 'ARRIVED' || data[i].status == 'PICKEDUP' || data[i].status == 'SCHEDULED' || data[i].status == 'PENDING' ) {
-    			html += 				'<h6 class="media-heading">Driver Name: ' + data[i].provider.first_name +'</h6>';
+    			html += 				'<h6 class="media-heading">Driver Name: ' + data[i].provider?data[i].provider.first_name:'' +'</h6>';
 
     			if( data[i].payment !=null ){
     			    html += 				'<h6 class="media-heading">Total Fare: $'+data[i].payment.total+'</h6>';

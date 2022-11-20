@@ -946,7 +946,7 @@ function getUpdateFilterData(props) {
 	$(this).addClass('active');
 
 	//initMap();
-	$.get(bases_url+'/dispatcher/dispatcher/trips/', {
+	$.get('/dispatcher/dispatcher/trips/', {
 		 filter: props
 	}, function(result) {
 

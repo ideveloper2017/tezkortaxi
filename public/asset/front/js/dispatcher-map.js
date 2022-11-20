@@ -666,7 +666,8 @@ var HTML = '';
 				HTML  +='<li class="list-group-item d-flex justify-content-between align-items-center">ETA: <span class="badge badge-primary badge-pill">'+data.time+'</span></li> <li class="list-group-item d-flex justify-content-between align-items-center"> Estimated Fare:  <span class="badge badge-primary badge-pill">$'+data.estimated_fare+'</span></li></ul></div></div>';
 				  $('#fareMap').html(HTML);
 				  $('#fareMap').fadeIn();
-				  $('#distance').val(data.distance);
+				  // $('#distance').val(data.distance);
+				  $('#distance').val(0);
 				  $('#estimated_price').val(data.estimated_fare);
 		},
 

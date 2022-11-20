@@ -581,14 +581,14 @@ class DispatcherController extends Controller
 
     public function store(Request $request) {
 
-        $this->validate($request, [
-                's_latitude' => 'required|numeric',
-                's_longitude' => 'required|numeric',
-                'd_latitude' => 'required|numeric',
-                'd_longitude' => 'required|numeric',
-                'service_type' => 'required|numeric|exists:service_types,id',
-              //  'distance' => 'required|numeric',
-            ]);
+//        $this->validate($request, [
+//                's_latitude' => 'required|numeric',
+//                's_longitude' => 'required|numeric',
+//                'd_latitude' => 'required|numeric',
+//                'd_longitude' => 'required|numeric',
+//                'service_type' => 'required|numeric|exists:service_types,id',
+//                'distance' => 'required|numeric',
+//            ]);
 
 
 		if( $request->has('booking_type') && $request->booking_type == 2 ) {

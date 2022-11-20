@@ -97,7 +97,7 @@
 							<div class="col-xs-12">
 								<div class="form-group">
 									<label for="distance">Distance(KM)</label>
-									<input type="text" class="form-control" readonly name="distance" id="distance"></input>
+									<input type="text" class="form-control" readonly name="distance" id="distance" value="0"></input>
 								</div>
 							</div>
 							<div class="col-xs-12">

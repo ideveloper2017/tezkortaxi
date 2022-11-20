@@ -11,12 +11,12 @@
 				<div class="modal-body">
 					<div class="hidden_fields">
 						<input type="hidden"  name="request_id" id="request_id" />
-						<input type="hidden"  name="distance" id="distance" />
-						<input type="hidden" name="s_latitude" id="s_latitude">
-						<input type="hidden" name="s_longitude" id="s_longitude">
-						<input type="hidden" name="d_latitude" id="d_latitude">
-						<input type="hidden" name="d_longitude" id="d_longitude">
-						<input type="hidden" name="service_type" id="service_type">
+						<input type="hidden"  name="distance" id="distance" value="0" />
+						<input type="hidden" name="s_latitude" id="s_latitude" value="0">
+						<input type="hidden" name="s_longitude" id="s_longitude" value="0">
+						<input type="hidden" name="d_latitude" id="d_latitude" value="0">
+						<input type="hidden" name="d_longitude" id="d_longitude" value="0">
+						<input type="hidden" name="service_type" id="service_type" value="0">
 					</div>
 					<div class="form-group clearfix">
 						<label class="control-label col-sm-4">Name:</label>
@@ -30,7 +30,7 @@
 							<input type="text" id="last_name"  name="last_name" class="form-control"  required/>
 						</div>
 					</div>
-					
+
 					<div class="form-group clearfix">
 						<label class="control-label col-sm-4">Email:</label>
 						<div class="col-sm-8">
@@ -48,14 +48,14 @@
 						<div class="col-sm-8">
 							<input type="text" name="s_address" class="form-control" id="s_address" placeholder="Pickup Address" required>
 						</div>
-					</div> 
+					</div>
 					<div class="form-group clearfix">
 						<label class="control-label col-sm-4">Dropoff Address</label>
 						<div class="col-sm-8">
 							<input type="text" name="d_address" class="form-control" id="d_address" placeholder="Dropoff Address" required>
 						</div>
 					</div>
-					
+
 					<div class="form-group clearfix">
 						<label class="control-label col-sm-4">Note:</label>
 						<div class="col-sm-8">
@@ -69,10 +69,9 @@
 						<div class="col-sm-8">
 							<a class="btn btn-block shadow-box" id="booking_btn" style="background-color: #b01d23;color: #fff !important; font-weight: bold;">SUBMIT</a>
 						</div>
-					</div>					
+					</div>
 				</div>
 			</form>
 		</div>
 	</div>
 </div>
-	

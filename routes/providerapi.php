@@ -10,6 +10,8 @@
 |
 */
 // Authentication
+use App\Http\Controllers\ProviderResources\TripController;
+
 Route::post('/register' , 'ProviderAuth\TokenController@register');
 Route::post('/check-email' , 'ProviderAuth\TokenController@checkEmail');
 Route::post('/check-mobile' , 'ProviderAuth\TokenController@checkMobile');
@@ -74,7 +76,7 @@ Route::group(['middleware' => ['provider.api']], function () {
 
     Route::group(['prefix' => 'requests'], function () {
 
-        Route::get('/upcoming' , 'ProviderResources\TripController@scheduled');
+        Route::get('/upcoming' , [TripController::class,'scheduled']);
         Route::get('/history', 'ProviderResources\TripController@history');
         Route::get('/history/details', 'ProviderResources\TripController@history_details');
         Route::get('/upcoming/details', 'ProviderResources\TripController@upcoming_details');
@@ -91,5 +93,5 @@ Route::group(['middleware' => ['provider.api']], function () {
     Route::get('document/status', 'ProviderResources\DocumentController@document_status');
     Route::get('document/types', 'ProviderResources\DocumentController@getDocumentTypes');
 	Route::get('/test', 'ProviderResources\TripController@test');
-	
+
 });

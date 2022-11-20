@@ -674,7 +674,7 @@ class DispatcherController extends Controller
 				if( $req_filters ) {
 					DB::table('request_filters')->whereIn('id', $req_filters)->delete();
 				}
-				$UserRequest->delete();
+//				$UserRequest->delete();
 			}
 
 

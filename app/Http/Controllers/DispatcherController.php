@@ -759,8 +759,8 @@ class DispatcherController extends Controller
 
 			$UserRequest->save();
 
-			Log::useFiles(storage_path().'/logs/dispatcher.log');
-			Log::info('New Request Created by dispatcher : ' . $UserRequest->booking_id);
+//			Log::useFiles(storage_path().'/logs/dispatcher.log');
+//			Log::info('New Request Created by dispatcher : ' . $UserRequest->booking_id);
 
 
 			if( $UserRequest->current_provider_id ) {

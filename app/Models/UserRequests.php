@@ -107,7 +107,7 @@ class UserRequests extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\Models\User');
+        return $this->belongsTo(User::class,'user_id','id');
     }
 
     /**
@@ -120,7 +120,7 @@ class UserRequests extends Model
 
     public function userrequestpayment()
     {
-        return $this->belongsTo('App\Models\UserRequestPayment');
+        return $this->belongsTo(UserRequestPayment::class,'request_id','id');
     }
 
     public function provider_service()

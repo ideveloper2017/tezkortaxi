@@ -670,7 +670,7 @@ class DispatcherController extends Controller
 			$service_type = $request->service_type;
 			if( $request->has('request_id') ) {
 				$UserRequest = UserRequests::where('id' , $request->request_id )->where('status', 'SEARCHING')->first();
-				$req_filters = DB::table('request_filters')->where('request_id', $UserRequest->id )->get()->pluck('id')->toArray();
+				$req_filters = DB::table('request_filters')->where('request_id', $User?$User->id:0 )->get()->pluck('id')->toArray();
 				if( $req_filters ) {
 					DB::table('request_filters')->whereIn('id', $req_filters)->delete();
 				}

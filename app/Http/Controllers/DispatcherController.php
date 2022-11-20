@@ -630,40 +630,40 @@ class DispatcherController extends Controller
 		}
 
 
-        if($request->has('schedule_time')) {
-
-			try {
-
-				$current = time();
-				$schedule_time = strtotime( Carbon::parse( $request->schedule_time ) );
-				$req_start = ( Setting::get('schedule_req_time') * 60 );
-				$time = $current + $req_start;
-
-				if( $schedule_time  < $time ) {
-					if($request->ajax()) {
-						return response()->json(['flash_error' => 'Please enter a schedule time as per admin guidelines!'] );
-					} else {
-						return redirect('dashboard')->with('flash_error', 'Please enter a schedule time as per admin guidelines!');
-					}
-				}
-
-
-                $CheckScheduling = UserRequests::where('status', 'SCHEDULED')
-                        ->where('user_id', $User->id)
-                        ->where('schedule_at', '>', strtotime($request->schedule_time." - 1 hour"))
-                        ->where('schedule_at', '<', strtotime($request->schedule_time." + 1 hour"))
-                        ->firstOrFail();
-
-			    if($request->ajax()) {
-                    return response()->json(['error' => trans('api.ride.request_scheduled')], 500);
-                } else {
-                    return redirect('dashboard')->with('flash_error', 'Already request is Scheduled on this time.');
-                }
-
-            } catch (Exception $e) {
-                // Do Nothing
-            }
-        }
+//        if($request->has('schedule_time')) {
+//
+//			try {
+//
+//				$current = time();
+//				$schedule_time = strtotime( Carbon::parse( $request->schedule_time ) );
+//				$req_start = ( Setting::get('schedule_req_time') * 60 );
+//				$time = $current + $req_start;
+//
+//				if( $schedule_time  < $time ) {
+//					if($request->ajax()) {
+//						return response()->json(['flash_error' => 'Please enter a schedule time as per admin guidelines!'] );
+//					} else {
+//						return redirect('dashboard')->with('flash_error', 'Please enter a schedule time as per admin guidelines!');
+//					}
+//				}
+//
+//
+//                $CheckScheduling = UserRequests::where('status', 'SCHEDULED')
+//                        ->where('user_id', $User->id)
+//                        ->where('schedule_at', '>', strtotime($request->schedule_time." - 1 hour"))
+//                        ->where('schedule_at', '<', strtotime($request->schedule_time." + 1 hour"))
+//                        ->firstOrFail();
+//
+//			    if($request->ajax()) {
+//                    return response()->json(['error' => trans('api.ride.request_scheduled')], 500);
+//                } else {
+//                    return redirect('dashboard')->with('flash_error', 'Already request is Scheduled on this time.');
+//                }
+//
+//            } catch (Exception $e) {
+//
+//            }
+//        }
 
         try{
             Session::put('DispatcherUserId', $User?$User->id:0);

@@ -19,7 +19,7 @@ Route::get('get-details/{type}/{id}', 'LiveTrip@getDetailsD')->name('live.detail
 
 
 Route::group(['as' => 'dispatcher.', 'prefix' => 'dispatcher'], function () {
-Route::get('/', 'DispatcherController@new_booking')->name('new_booking');
+Route::get('/', 'DispatcherController@index')->name('index');
 Route::post('/', 'DispatcherController@store')->name('store');
 Route::post('/getFare', 'DispatcherController@get_ride_fare')->name('getFare');
 Route::get('/trips', 'DispatcherController@trips')->name('trips');

@@ -806,8 +806,10 @@ class DispatcherController extends Controller
 
         } catch (Exception $e) {
 
+
             if($request->ajax()) {
-                return response()->json(['message' => $e->getMessage()], 500);
+
+                return response()->json(['message' => $e->getMessage().' '.$e->getLine()], 500);
             }else{
                 return back()->with('flash_error', $e->getMessage() );
             }

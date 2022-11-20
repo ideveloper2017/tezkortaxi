@@ -93,7 +93,6 @@
 									</div>
 								@endif
 							</div>
-
 							<div class="col-xs-12">
 								<div class="form-group">
 									<label for="distance">Distance(KM)</label>

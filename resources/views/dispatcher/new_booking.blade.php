@@ -1,5 +1,5 @@
-<?php 
-	$total_zones =	count( $all_zones ); 
+<?php
+	$total_zones =	count( $all_zones );
 	$width 		 =	$total_zones * 	200;
 ?>
 
@@ -34,7 +34,7 @@
 									<input type="text" class="form-control" name="first_name" id="first_name" placeholder="Name" required />
 								</div>
 									<input type="hidden" class="form-control" name="last_name" id="last_name" placeholder="Last Name" value="" />
-						
+
 							</div>
 							<div class="col-xs-6">
 								<div class="form-group">
@@ -52,16 +52,16 @@
 								<div class="form-group">
 									<label for="s_address">Pickup Location</label>
 									<input type="text" name="s_address" class="form-control" id="s_address" placeholder="Pickup Location" required></input>
-									<input type="hidden" name="s_latitude" id="s_latitude"></input>
-									<input type="hidden" name="s_longitude" id="s_longitude"></input>
+									<input type="hidden" name="s_latitude" id="s_latitude" value="0"></input>
+									<input type="hidden" name="s_longitude" id="s_longitude" value="0"></input>
 								</div>
 								<div class="form-group">
 									<label for="d_address">Drop Location</label>
 									<input type="hidden" name="dispatcher_id" id="dispatcher_id" value="{{ $user_id }}">
 									<input type="text"  name="d_address" class="form-control" id="d_address" placeholder="Drop Location" required></input>
-									<input type="hidden" name="d_latitude" id="d_latitude"></input>
-									<input type="hidden" name="d_longitude" id="d_longitude"></input>
-									<input type="hidden" name="request_id" id="request_id"/>
+									<input type="hidden" name="d_latitude" id="d_latitude" value="0"></input>
+									<input type="hidden" name="d_longitude" id="d_longitude" value="0"></input>
+									<input type="hidden" name="request_id" id="request_id" value="0"/>
 								</div>
 								<div class="form-group">
 									<label for="schedule_time">Schedule Time</label>
@@ -70,14 +70,14 @@
 								@if( $payment_methods->count() )
 									<div class="form-group">
 										<label for="service_types">Payment Method</label>
-										<select name="payment_method" id="payment_method" class="form-control">	
+										<select name="payment_method" id="payment_method" class="form-control">
 											@foreach( $payment_methods as $method )
 												<option value="{{ $method->id }}">{{ $method->name }}</option>
 											@endforeach
 										</select>
-									</div> 
+									</div>
 								@endif
-								
+
 								@if( count( $services) > 0 )
 									<div class="form-group">
 										<label for="service_types">Cab Type</label>
@@ -86,14 +86,14 @@
 												<option value="{{ $service->id }}">{{ $service->name }}</option>
 											@endforeach
 										</select>
-									</div> 
+									</div>
 								@else
 									<div class="form-group">
 										<div  class="bg-danger">Service type not added by admin. Please contact to admin first to add a service type then create a request</div>
-									</div>								
+									</div>
 								@endif
 							</div>
-				
+
 							<div class="col-xs-12">
 								<div class="form-group">
 									<label for="distance">Distance(KM)</label>
@@ -116,19 +116,19 @@
 													<option value="{{ $corporate->id }}">{{ $corporate->corporate_name }}</option>
 												@endforeach
 											</select>
-										</div> 
+										</div>
 									</div>
 									<div class="col-xs-12">
 										<div class="form-group">
 											<label htmlfor="provider_id">Fare (Driver)</label>
 											<input type="text" readonly class="form-control" name="estimated_price" id="estimated_price"></input>
-										</div> 
+										</div>
 									</div>
 									<div class="col-xs-12">
 										<div class="form-group">
 											<label htmlfor="provider_id">Fare (Customer)</label>
 											<input type="text"  class="form-control" name="amount_customer" id="amount_customer"></input>
-										</div> 
+										</div>
 									</div>
 								</div>
 							@endif
@@ -141,7 +141,7 @@
 								<div class="form-group hide" id="provider_list">
 									<label htmlfor="provider_id">Select Driver</label>
 									<input name="provider_id" type="hidden"/>
-									
+
 									<div class="provider_fl_wrapper">
 										<div class="form-control" id="provider_wrapper">
 											<div class="dr_search_txt">Select Driver</div>
@@ -170,17 +170,17 @@
 			</div>
 			<div class="col-md-8">
 				<div class="card my-card">
-					<div class="box card-header">								
-					<div class="col-md-3">						        
+					<div class="box card-header">
+					<div class="col-md-3">
 					<div style="margin-top:5px;font-size: 16px;">
 						<input type="checkbox" name="vehicle1" value="ongoing" id="ongoing" class="vehicle1" onclick="rideOn()"> On Going Ride</div>
-					</div>								
-					<div class="col-md-3">						        
+					</div>
+					<div class="col-md-3">
 					<div style="margin-top:5px;font-size: 16px;">
 						<input type="checkbox" name="vehicle1" value="driver" id="driver" class="
 						vehicle1" onclick="rideOn();"> Active Driver</div>
-					</div>								
-								
+					</div>
+
 					</div>
 					<div class="card-body" style="height: 500px;">
 						<div id="map"></div>
@@ -191,7 +191,7 @@
 						@foreach(  $all_zones as $zone )
 							<li  class="zone">
 								<div class="header">{{ $zone['zone_name'] }}</div>
-                                <div class="driver_list zone_{{ $zone['id'] }}" data-zone_id="{{ $zone['id'] }}"  id="zone_{{ $zone['id'] }}">	
+                                <div class="driver_list zone_{{ $zone['id'] }}" data-zone_id="{{ $zone['id'] }}"  id="zone_{{ $zone['id'] }}">
 									@if( $zone['drivers'] )
 										@foreach( $zone['drivers'] as $driver )
 												<div class="driver <?php echo ( $driver->provider_status == 'riding' ) ? 'bg-warning' : ''; ?>  driver_{{ $driver->id }}" id="position_{{ $driver->driver_position }}">
@@ -200,20 +200,20 @@
 												</div>
 										@endforeach
 									@endif
-								</div>												
+								</div>
 							</li>
 						@endforeach
 					</ul>
 				</div>
-	
+
 				<div id="fareMap"></div>
-				
+
 			</div>
 		</div>
 	</div>
 </div>
 @include('dispatcher.layout.partials.wait_model')
- 
+
 @endsection
 
 @section('scripts')
@@ -221,10 +221,10 @@
 
 
 
-@php 
+@php
 
  //$latAndLong =getLatAndLongByLocation('Country');
- $provider_select_timeout =providerTimeout(); 
+ $provider_select_timeout =providerTimeout();
 @endphp
 
 <script type="text/javascript">
@@ -246,12 +246,12 @@ var mapIcons = {
 
 	var current_lat  =	"<?php echo $ip_details->geoplugin_latitude; ?>";
 	var current_long =	"<?php echo $ip_details->geoplugin_longitude; ?>";
-	
+
 <?php }?>
 
 var provider_select_timeout = "<?php echo $provider_select_timeout; ?>";
 var dispatcher_user_id = "<?php echo $user_id; ?>" ;
-var site_url           ="<?php echo  url('/'); ?>"; 
+var site_url           ="<?php echo  url('/'); ?>";
 var countdown_number   = provider_select_timeout;
 var countdown;
 
@@ -266,21 +266,21 @@ window.PinTaxi = {!! json_encode([
 
 
 //Document ready function define here
-$(function () {       
+$(function () {
 	$('#schedule_time').datetimepicker();
-	
+
 	$('#provider_wrapper').on('click', function() {
 		$('#dr_list_wrapper').slideToggle('slow');
 	});
-	
+
 	$(document).on('click','#dr_list .dr_item',function() {
 		$('#provider_list input[name=provider_id]').val($(this).attr('pr_id'));
 		$('#provider_list .dr_search_txt').text($(this).text());
 		$('#dr_list_wrapper').slideUp('slow');
 	});
-	
+
 });
- 
+
 
 
 function filterFunction() {
@@ -386,7 +386,7 @@ html, body, #map{
     }
     .my-card .card-header .btn{
         font-size: 10px;
-        padding: 3px 7px;   
+        padding: 3px 7px;
     }
     .tag.my-tag{
         padding: 10px 15px;
@@ -446,11 +446,11 @@ html, body, #map{
         height: 450px;
         overflow-y: scroll;
     }
-	
+
 	#corporate_list {
 		display: none;
 	}
-	
+
 	#countdown {
 		margin: 0 auto;
 		width: 140px;
@@ -470,11 +470,11 @@ html, body, #map{
 		background-color: #fff;
 		padding: 5px;
 	}
-	
+
 	.main_inner {
 	    background: #fff;
 	}
-	
+
 	.zone .header {
 		background-color: #f1f1f1;
 	}

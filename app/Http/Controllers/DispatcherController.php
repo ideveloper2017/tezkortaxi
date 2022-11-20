@@ -587,7 +587,7 @@ class DispatcherController extends Controller
                 'd_latitude' => 'required|numeric',
                 'd_longitude' => 'required|numeric',
                 'service_type' => 'required|numeric|exists:service_types,id',
-                'distance' => 'required|numeric',
+              //  'distance' => 'required|numeric',
             ]);
 
 

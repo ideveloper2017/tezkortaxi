@@ -325,6 +325,7 @@ class DispatcherController extends Controller
         } else {
             $Trips = UserRequests::with('user','provider','payment')->orderBy('id','desc')->get();
         }
+        dd($Trips);
         return $Trips;
     }
 

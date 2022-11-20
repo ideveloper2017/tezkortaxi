@@ -667,7 +667,7 @@ var HTML = '';
 				  $('#fareMap').html(HTML);
 				  $('#fareMap').fadeIn();
 				  // $('#distance').val(data.distance);
-				  $('#distance').val(0);
+				  $('#distance').val('0');
 				  $('#estimated_price').val(data.estimated_fare);
 		},
 

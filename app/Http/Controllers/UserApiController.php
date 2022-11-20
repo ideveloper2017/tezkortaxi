@@ -1129,7 +1129,7 @@ public function request_status_check1() {
         }
 
         catch (Exception $e) {
-            return response()->json(['error' => trans('api.something_went_wrong')]);
+            return response()->json(['error' => $e->getMessage().' '.$e->getLine()]);
         }
     }
 

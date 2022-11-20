@@ -1321,7 +1321,7 @@ function ongoingInitialize(trip_id) {
 function updateTripStatus() {
 
 	if(list_status == '' || list_status == 'dispatch-dispatching' || list_status == 'dispatch-new' ) {
-		$.get(bases_url+'/dispatcher/dispatcher/trips/', {
+		$.get('/dispatcher/dispatcher/trips/', {
 		 filter: list_status
 			}, function(result) {
 				if( result ) {

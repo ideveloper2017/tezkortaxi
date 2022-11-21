@@ -13,7 +13,7 @@ Route::post('/assign/company', 'DispatcherController@assignCompany');
 Route::post('/request/update','DispatcherController@update_trip');
 
 Route::resource('service', 'Resource\ServiceResource');
-Route::resource('corporate_list', 'Resource\CorporateAccountResource');
+//Route::resource('corporate_list', 'Resource\CorporateAccountResource');
 Route::get('get-locations/{type?}', 'LiveTrip@index')->name('live.index');
 Route::get('get-details/{type}/{id}', 'LiveTrip@getDetailsD')->name('live.details');
 

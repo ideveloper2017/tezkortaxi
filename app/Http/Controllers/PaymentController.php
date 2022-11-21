@@ -17,7 +17,7 @@ use App\Card;
 use App\User;
 use App\UserRequests;
 use App\UserRequestPayment;
-//paypal 
+//paypal
 use PayPal\Api\Amount;
 use PayPal\Api\Details;
 use PayPal\Api\Item;
@@ -45,28 +45,28 @@ class PaymentController extends Controller
 
     public function __construct()
     {
- 
+
       /*PayPal api context */
-        $paypal_conf = \Config::get('paypal');  
+        $paypal_conf = \Config::get('paypal');
         $PAYPAL_CLIENT_ID =Setting::get('PAYPAL_CLIENT_ID');
         $PAYPAL_SECRET    =Setting::get('PAYPAL_SECRET');
         $PAYPAL_MODE      =Setting::get('PAYPAL_MODE');
         $paypal_conf['settings']['mode'] =$PAYPAL_MODE;
-       
-        $this->_api_context = new ApiContext(new OAuthTokenCredential(
-            $PAYPAL_CLIENT_ID,
-            $PAYPAL_SECRET)
-        );
-        $this->_api_context->setConfig($paypal_conf['settings']);
- 
+
+//        $this->_api_context = new ApiContext(new OAuthTokenCredential(
+//            $PAYPAL_CLIENT_ID,
+//            $PAYPAL_SECRET)
+//        );
+//        $this->_api_context->setConfig($paypal_conf['settings']);
+
     }
 
    public function payment(Request $request)
     {
-        
+
         $this->validate($request, [
                 'request_id' => 'required|exists:user_request_payments,request_id|exists:user_requests,id,paid,0,user_id,'.Auth::user()->id,
-                
+
                 //'m_id'=>'required', //merchant_id
                // 'c_id'=>'required', //chekout_id
             ]);
@@ -76,13 +76,13 @@ class PaymentController extends Controller
 
         if($UserRequest->payment_mode == 'CARD') {
 
-            $RequestPayment = UserRequestPayment::where('request_id',$request->request_id)->first(); 
+            $RequestPayment = UserRequestPayment::where('request_id',$request->request_id)->first();
 
-           
+
 
             try {
 
-                
+
 //dd($request->all());
                 /*$RequestPayment->payment_id = $request->m_id;*/
                 $RequestPayment->payment_id = $request->card_id;
@@ -95,7 +95,7 @@ class PaymentController extends Controller
 
                 if($request->ajax()) {
 
-                   return response()->json(['message' => trans('api.card')]); 
+                   return response()->json(['message' => trans('api.card')]);
                 } else {
                     return redirect('dashboard')->with('flash_success',trans('api.card'));
                 }
@@ -119,37 +119,37 @@ class PaymentController extends Controller
                   //dd('hii');
              Session::put('request_id',$request->request_id);
 
-         	 $RequestPayment = UserRequestPayment::where('request_id',$request->request_id)->first(); 
+         	 $RequestPayment = UserRequestPayment::where('request_id',$request->request_id)->first();
 
          	      $total_amount =round($RequestPayment->total);
-              
+
 			        $payer = new Payer();
 			        $payer->setPaymentMethod('paypal');
-			 
+
 			        $item_1 = new Item();
-			 
+
 			        $item_1->setName('Item 1') /** item name **/
 			            ->setCurrency('USD')
 			            ->setQuantity(1)
 			            ->setPrice($total_amount); /** unit price **/
-			 
+
 			        $item_list = new ItemList();
 			        $item_list->setItems(array($item_1));
-			 
+
 			        $amount = new Amount();
 			        $amount->setCurrency('USD')
 			            ->setTotal($total_amount);
-			 
+
 			        $transaction = new Transaction();
 			        $transaction->setAmount($amount)
 			            ->setItemList($item_list)
 			            ->setDescription('Your transaction description');
-			 
+
 			        $redirect_urls = new RedirectUrls();
 			        $redirect_urls->setReturnUrl(URL::route('paypalbookingstatus')) /** Specify return URL **/
 			            ->setCancelUrl(URL::route('paypalbookingstatus'));
 
-			 
+
 			        $payment = new Payment();
 			        $payment->setIntent('Sale')
 			            ->setPayer($payer)
@@ -157,36 +157,36 @@ class PaymentController extends Controller
 			            ->setTransactions(array($transaction));
 			        /** dd($payment->create($this->_api_context));exit; **/
 			        try {
-			 
+
 			            $payment->create($this->_api_context);
-			 
+
 			        } catch (\PayPal\Exception\PPConnectionException $ex) {
-			 
+
 			            if (\Config::get('app.debug')) {
-			 
+
 			                \Session::put('error', 'Connection timeout');
 			                return Redirect::route('user.dashboard');
-			 
+
 			            } else {
-			 
+
 			                \Session::put('error', 'Some error occur, sorry for inconvenient');
 			                return Redirect::route('user.dashboard');
-			 
+
 			            }
-			 
+
 			        }
-			 
+
 			        foreach ($payment->getLinks() as $link) {
-			 
+
 			            if ($link->getRel() == 'approval_url') {
-			 
+
 			                $redirect_url = $link->getHref();
 			                break;
-			 
+
 			            }
-			 
+
 			        }
-			 
+
 			        /** add payment ID to session **/
 			        Session::put('paypal_payment_id', $payment->getId());
 
@@ -196,21 +196,21 @@ class PaymentController extends Controller
                          Session::put('paypal_payment_type', 'web');
                     }
 			        if (isset($redirect_url)) {
-			 
+
 			            /** redirect to paypal **/
 			            return Redirect::away($redirect_url);
-			 
+
 			        }
-			 
+
 			        \Session::put('error', 'Unknown error occurred');
 			        return Redirect::route('user.dashboard');
 
          }
          if($UserRequest->payment_mode == 'RAZORPAY'){
-            
+
             $input = $request->all();
 
-        
+
                 try {
 
                     $payment = UserRequestPayment::where('request_id',$request->request_id)->first();
@@ -224,14 +224,14 @@ class PaymentController extends Controller
 
                     if($request->ajax()) {
 
-                       return response()->json(['message' => trans('api.razorpay')]); 
+                       return response()->json(['message' => trans('api.razorpay')]);
                     } else {
                         return redirect('dashboard')->with('flash_success',trans('api.razorpay'));
                     }
-                    
+
 
                 } catch (\Exception $e) {
-                   
+
                     if($request->ajax()){
 
                     return response()->json(['error' => $e->getMessage()], 500);
@@ -243,30 +243,30 @@ class PaymentController extends Controller
                 }
 
          }
-          
-         if($request->ajax()){ 
 
-                $request_id = $request->request_id; 
-                $payment_id = $request->payment_id; 
+         if($request->ajax()){
+
+                $request_id = $request->request_id;
+                $payment_id = $request->payment_id;
                 $UserRequest = UserRequests::find($request_id);
-                $RequestPayment = UserRequestPayment::where('request_id',$request_id)->first(); 
+                $RequestPayment = UserRequestPayment::where('request_id',$request_id)->first();
                 $RequestPayment->payment_id = $payment_id;
                 $RequestPayment->payment_mode  = empty($request->payment_mode) ? 'PAYPAL' : $request->payment_mode;
-                $RequestPayment->save(); 
+                $RequestPayment->save();
                 $UserRequest->paid = 1;
                 $UserRequest->status = 'COMPLETED';
                 $UserRequest->save();
-                return response()->json(['message' => trans('api.paid')]); 
+                return response()->json(['message' => trans('api.paid')]);
 
           }
-        
+
     }
-  
+
 
 
     public function paymentStripe(Request $request)
     {
-        
+
         $this->validate($request, [
                 'request_id' => 'required|exists:user_request_payments,request_id|exists:user_requests,id,paid,0,user_id,'.Auth::user()->id
             ]);
@@ -276,7 +276,7 @@ class PaymentController extends Controller
 
         if($UserRequest->payment_mode == 'CARD') {
 
-            $RequestPayment = UserRequestPayment::where('request_id',$request->request_id)->first(); 
+            $RequestPayment = UserRequestPayment::where('request_id',$request->request_id)->first();
 
             $StripeCharge = $RequestPayment->total * 100;
 
@@ -304,8 +304,8 @@ class PaymentController extends Controller
                 $UserRequest->save();
 
                 if($request->ajax()) {
-                    
-                   return response()->json(['message' => trans('api.paid')]); 
+
+                   return response()->json(['message' => trans('api.paid')]);
                 } else {
                     return redirect('dashboard')->with('flash_success','Paid');
                 }
@@ -324,10 +324,10 @@ class PaymentController extends Controller
                 }
             }
         }
-        
+
         if($UserRequest->payment_mode == 'PAYPAL') {
 
-            $RequestPayment = UserRequestPayment::where('request_id',$request->request_id)->first(); 
+            $RequestPayment = UserRequestPayment::where('request_id',$request->request_id)->first();
 
             $StripeCharge = $RequestPayment->total * 100;
 
@@ -355,8 +355,8 @@ class PaymentController extends Controller
                 $UserRequest->save();
 
                 if($request->ajax()) {
-                    
-                   return response()->json(['message' => trans('api.paid')]); 
+
+                   return response()->json(['message' => trans('api.paid')]);
                 } else {
                     return redirect('dashboard')->with('flash_success','Paid');
                 }
@@ -374,11 +374,11 @@ class PaymentController extends Controller
                     return back()->with('flash_error', $e->getMessage());
                 }
             }
-        }   
-        
+        }
+
         if($UserRequest->payment_mode == 'RAZORPAY') {
 
-            $RequestPayment = UserRequestPayment::where('request_id',$request->request_id)->first(); 
+            $RequestPayment = UserRequestPayment::where('request_id',$request->request_id)->first();
 
             $StripeCharge = $RequestPayment->total * 100;
 
@@ -393,8 +393,8 @@ class PaymentController extends Controller
                 $UserRequest->save();
 
                 if($request->ajax()) {
-                    
-                   return response()->json(['message' => trans('api.paid')]); 
+
+                   return response()->json(['message' => trans('api.paid')]);
                 } else {
                     return redirect('dashboard')->with('flash_success','Paid');
                 }
@@ -413,12 +413,12 @@ class PaymentController extends Controller
                 }
             }
         }
-        
+
     }
-    
+
     public function paymentPaypal(Request $request)
     {
-        
+
         $this->validate($request, [
                 'request_id' => 'required|exists:user_request_payments,request_id|exists:user_requests,id,paid,0,user_id,'.Auth::user()->id,
                 'payment_id' => 'required'
@@ -429,7 +429,7 @@ class PaymentController extends Controller
 
         if($UserRequest->payment_mode == 'PAYPAL') {
 
-            $RequestPayment = UserRequestPayment::where('request_id',$request->request_id)->first(); 
+            $RequestPayment = UserRequestPayment::where('request_id',$request->request_id)->first();
 
             $StripeCharge = $RequestPayment->total * 100;
 
@@ -457,8 +457,8 @@ class PaymentController extends Controller
                 $UserRequest->save();
 
                 if($request->ajax()) {
-                    
-                   return response()->json(['message' => trans('api.paid')]); 
+
+                   return response()->json(['message' => trans('api.paid')]);
                 } else {
                     return redirect('dashboard')->with('flash_success','Paid');
                 }
@@ -477,22 +477,22 @@ class PaymentController extends Controller
                 }
             }
         }
-          
-        if($request->ajax()){ 
 
-            $request_id = $request->request_id; 
-            $payment_id = $request->payment_id; 
+        if($request->ajax()){
+
+            $request_id = $request->request_id;
+            $payment_id = $request->payment_id;
             $UserRequest = UserRequests::find($request_id);
-            $RequestPayment = UserRequestPayment::where('request_id',$request_id)->first(); 
+            $RequestPayment = UserRequestPayment::where('request_id',$request_id)->first();
             $RequestPayment->payment_id = $payment_id;
             $RequestPayment->payment_mode  = 'PAYPAL';
-            $RequestPayment->save(); 
+            $RequestPayment->save();
             $UserRequest->paid = 1;
             $UserRequest->status = 'COMPLETED';
             $UserRequest->save();
-            return response()->json(['message' => trans('api.paid')]); 
+            return response()->json(['message' => trans('api.paid')]);
         }
-        
+
     }
     /**
      * add wallet money for user.
@@ -507,7 +507,7 @@ class PaymentController extends Controller
             ]);
 
         try{
-            
+
             $StripeWalletCharge = $request->amount * 100;
 
             Stripe::setApiKey(Setting::get('stripe_secret_key'));
@@ -532,7 +532,7 @@ class PaymentController extends Controller
             (new SendPushNotification)->WalletMoney(Auth::user()->id,currency($request->amount));
 
             if($request->ajax()){
-                return response()->json(['message' => currency($request->amount).trans('api.added_to_your_wallet'), 'user' => $update_user]); 
+                return response()->json(['message' => currency($request->amount).trans('api.added_to_your_wallet'), 'user' => $update_user]);
             } else {
                 return redirect('wallet')->with('flash_success',currency($request->amount).' added to your wallet');
             }
@@ -551,7 +551,7 @@ class PaymentController extends Controller
             }
         }
     }
-    
+
     public function addBankAccount(Request $request){
 
         $this->validate($request, [
@@ -565,20 +565,20 @@ class PaymentController extends Controller
                 //'provider_id'=>'Auth::user()->id'
             ]);
 
-          
+
           $find = BankAccount::where('provider_id',Auth::user()->id)->count();
           if($find == 0){
-        
-           $r = BankAccount::Create($request->all()); 
+
+           $r = BankAccount::Create($request->all());
            $r->provider_id = Auth::user()->id;
            $r->save();
            $status = 1;
           }else{
-        
+
            $status = 0; $r = 0; }
-        
+
            return response()->json(['status'=>$status,'data'=>$r]);
-          
+
     }
 
     public function getPaymentStatus(Request $request)
@@ -614,55 +614,55 @@ class PaymentController extends Controller
                   $tqty = $booking->sum('quantity');
                     $event->booked = $event->booked+$tqty;
                     $event->save();*/
-                $request_id = $request_id; 
-                $payment_id = $payment_id; 
+                $request_id = $request_id;
+                $payment_id = $payment_id;
                 $UserRequest = UserRequests::find($request_id);
-                $RequestPayment = UserRequestPayment::where('request_id',$request_id)->first(); 
+                $RequestPayment = UserRequestPayment::where('request_id',$request_id)->first();
                 $RequestPayment->payment_id = $payment_id;
                 $RequestPayment->payment_mode  = 'PAYPAL';
-                $RequestPayment->save(); 
+                $RequestPayment->save();
                 $UserRequest->paid = 1;
                 $UserRequest->status = 'COMPLETED';
                 $UserRequest->save();
                 if($request->ajax()) {
-                    
-                   return response()->json(['message' => trans('api.paypal')]); 
+
+                   return response()->json(['message' => trans('api.paypal')]);
 
                 } else {
 
                     return redirect('dashboard')->with('flash_success',trans('api.paypal'));
-                } 
-                  
+                }
+
                    \Session::put('error', 'Payment failed');
               //return Redirect::route('paypalbookingreject');
                 return   redirect('dashboard');
-               
+
               }
-                
+
         }
         public function payWithpaypalReject(Request $request){
         Session::forget('paypal_payment_id');
         return view('payment-reject');
       }
-    
+
     public function BankList(Request $request){
 
- 
+
       $find = BankAccount::where('provider_id',Auth::user()->id)->count();
       if($find != 0){
-    
-        $r = BankAccount::where('provider_id',Auth::user()->id)->get(); 
+
+        $r = BankAccount::where('provider_id',Auth::user()->id)->get();
         $status = 1;
       }else{
-    
+
        $status = 0; $r = 0; }
-    
-       
-       
+
+
+
        return response()->json(['status'=>$status,'data'=>$r]);
-      
+
     }
-    
+
     public function payment_before_request(Request $request) {
 
       $this->validate($request, [
@@ -700,7 +700,7 @@ class PaymentController extends Controller
        }
      }
 
-     return response()->json(['status'=>$status,'message' => $msg]); 
+     return response()->json(['status'=>$status,'message' => $msg]);
 
    } catch(Exception $e) {
 

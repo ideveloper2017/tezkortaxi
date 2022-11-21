@@ -1,13 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\CmsAuth;
+use App\Models\Page;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Hesto\MultiAuth\Traits\LogsoutGuard;
 use Session;
-use App\Page;
+
 use View;
 
 class LoginController extends Controller
@@ -42,9 +43,9 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('cms.guest', ['except' => 'logout']);
-		
-        $pageList 	= Page::all(); 
-        View::share('pageList', $pageList); 
+
+        $pageList 	= Page::all();
+        View::share('pageList', $pageList);
     }
 
     /**
@@ -66,7 +67,7 @@ class LoginController extends Controller
     {
         return Auth::guard('cms');
     }
-    
+
     public function logout(Request $request) {
 	//   Auth::logout();
 		Session::flush();

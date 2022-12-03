@@ -22,7 +22,7 @@ class ProviderApiMiddleware
     public function handle($request, Closure $next)
     {
         Config::set('auth.providers.users.model', 'App\Models\Provider');
-        echo JWTAuth::parseToken()->authenticate(false, 'provider')l
+        echo JWTAuth::parseToken()->authenticate(false, 'provider');
         try {
 
             if (!$user = JWTAuth::parseToken()->authenticate(false, 'provider')) {

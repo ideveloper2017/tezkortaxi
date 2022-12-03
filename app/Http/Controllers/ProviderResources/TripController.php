@@ -40,7 +40,7 @@ class TripController extends Controller
      */
     public function index(Request $request)
     {
-        dd('hii');
+
         try{
             if($request->ajax()) {
                 $Provider = Auth::user();

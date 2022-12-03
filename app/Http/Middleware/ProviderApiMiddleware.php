@@ -41,7 +41,7 @@ class ProviderApiMiddleware
 
         } catch (JWTException $e) {
 
-            return response()->json(['error' => 'token_absent']);
+            return response()->json(['error' => 'token_absent'.' '.$e->getLine().' '.$e->getMessage()]);
 
         }
 

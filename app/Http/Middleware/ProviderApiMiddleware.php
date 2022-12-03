@@ -23,27 +23,31 @@ class ProviderApiMiddleware
     {
         Config::set('auth.providers.users.model', 'App\Models\Provider');
 
-//        try {
-//
-//            if (!$user = JWTAuth::parseToken()->authenticate(false, 'provider')) {
-//                return response()->json(['user_not_found'], 404);
-//            } else {
-//                \Auth::loginUsingId($user->id);
-//            }
-//
-//        } catch (TokenExpiredException $e) {
-//
-//            return response()->json(['error' => 'token_expired'], $e->getStatusCode());
-//
-//        } catch (TokenInvalidException $e) {
-//
-//            return response()->json(['error' => 'token_invalid'], $e->getStatusCode());
-//
-//        } catch (JWTException $e) {
-//
-//            return response()->json(['error' => 'token_absent'.' '.$e->getLine().' '.$e->getMessage()]);
-//
-//        }
+
+
+
+        try {
+            $user = JWTAuth::parseToken()->authenticate(false, 'provider');
+            print_r($user);
+            if (!$user = JWTAuth::parseToken()->authenticate(false, 'provider')) {
+                return response()->json(['user_not_found'], 404);
+            } else {
+                \Auth::loginUsingId($user->id);
+            }
+
+        } catch (TokenExpiredException $e) {
+
+            return response()->json(['error' => 'token_expired'], $e->getStatusCode());
+
+        } catch (TokenInvalidException $e) {
+
+            return response()->json(['error' => 'token_invalid'], $e->getStatusCode());
+
+        } catch (JWTException $e) {
+
+            return response()->json(['error' => 'token_absent'.' '.$e->getLine().' '.$e->getMessage()]);
+
+        }
 
         return $next($request);
     }

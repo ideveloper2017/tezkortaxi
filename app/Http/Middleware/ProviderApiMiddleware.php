@@ -24,11 +24,12 @@ class ProviderApiMiddleware
         Config::set('auth.providers.users.model', 'App\Models\Provider');
 
         try {
-
+            $user = JWTAuth::parseToken()->authenticate(false, 'provider');
+           dd($user);
             if (!$user = JWTAuth::parseToken()->authenticate(false, 'provider')) {
                 return response()->json(['user_not_found'], 404);
             } else {
-                print_r($$user);
+
                 \Auth::loginUsingId($user->id);
             }
 

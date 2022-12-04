@@ -19,30 +19,58 @@ class ProviderApiMiddleware
      * @param  \Closure  $next
      * @return mixed
      */
+//    public function handle($request, Closure $next)
+//    {
+//        Config::set('auth.providers.users.model', 'App\Models\Provider');
+//
+//        try {
+//
+//            if (!$user = JWTAuth::parseToken()->authenticate()) {
+//                return response()->json(['user_not_found'], 404);
+//            } else {
+//                \Auth::loginUsingId($user->id);
+//            }
+//
+//        } catch (TokenExpiredException $e) {
+//
+//            return response()->json(['error' => 'token_expired'], $e->getStatusCode());
+//
+//        } catch (TokenInvalidException $e) {
+//
+//            return response()->json(['error' => 'token_invalid'], $e->getStatusCode());
+//
+//        } catch (JWTException $e) {
+//
+//            return response()->json(['error' => 'token_absent'.' '.$e->getLine().' '.$e->getMessage()]);
+//
+//        }
+//
+//        return $next($request);
+//    }
     public function handle($request, Closure $next)
     {
-        Config::set('auth.providers.users.model', 'App\Models\Provider');
-
         try {
+            $user = JWTAuth::parseToken()->authenticate();
+            Auth::setUser($user);
+        }
+        catch (TokenExpiredException $e) {
 
-            if (!$user = JWTAuth::parseToken()->authenticate()) {
-                return response()->json(['user_not_found'], 404);
-            } else {
-                \Auth::loginUsingId($user->id);
-            }
-
-        } catch (TokenExpiredException $e) {
-
-            return response()->json(['error' => 'token_expired'], $e->getStatusCode());
+            return response()->json([
+                'error' => 'Token Expired!',
+                'statusCode' => (int)401
+            ], 401);
 
         } catch (TokenInvalidException $e) {
-
-            return response()->json(['error' => 'token_invalid'], $e->getStatusCode());
+            return response()->json([
+                'error' => 'Not Authorized!',
+                'statusCode' => (int)401
+            ], 401);
 
         } catch (JWTException $e) {
-
-            return response()->json(['error' => 'token_absent'.' '.$e->getLine().' '.$e->getMessage()]);
-
+            return response()->json([
+                'error' => 'Not Authorized!',
+                'statusCode' => (int)401
+            ], 401);
         }
 
         return $next($request);

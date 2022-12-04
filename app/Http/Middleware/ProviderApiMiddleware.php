@@ -47,6 +47,7 @@ class ProviderApiMiddleware
 
         return $next($request);
     }
+
 //    public function handle($request, Closure $next)
 //    {
 //        try {

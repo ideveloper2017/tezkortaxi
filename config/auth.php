@@ -82,12 +82,12 @@ return [
         ],
 
         'api' => [
-            'driver' => 'jwt',
+            'driver' => 'passport',
             'provider' => 'users',
         ],
 
         'providerapi' => [
-            'driver' => 'passport',
+            'driver' => 'jwt',
             'provider' => 'providers',
         ],
     ],

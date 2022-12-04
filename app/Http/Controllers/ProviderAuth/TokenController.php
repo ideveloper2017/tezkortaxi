@@ -474,7 +474,7 @@ class TokenController extends Controller
     public function refresh_token(Request $request)
     {
 
-        Config::set('auth.providers.users.model', 'App\Provider');
+        Config::set('auth.providers.users.model', 'App\Models\Provider');
 
         $Provider = Provider::with('service', 'device')->find(Auth::user()->id);
 

@@ -74,7 +74,7 @@ class TripController extends Controller
             $trips = UserRequests::count();
             $query = "SELECT SUM(user_request_payments.fixed + user_request_payments.distance + user_request_payments.tax ) as revenue FROM `user_requests` LEFT JOIN user_request_payments on user_requests.id=user_request_payments.request_id where provider_id=".$provider;
             $rev = collect(DB::select($query))->first();
-            $totalride = UserRequests::where('provider_id',$provider)->pluck('id');
+            $totalride = UserRequests::pluck('id');
             $totalEarning = UserRequestPayment::whereIn('request_id', $totalride)->sum('total');
             $commission = UserRequestPayment::whereIn('request_id', $totalride)->sum('commision');
             $earnings = $totalEarning-$commission;

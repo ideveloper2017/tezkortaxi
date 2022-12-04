@@ -85,7 +85,7 @@ class Kernel extends HttpKernel
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'support' => \App\Http\Middleware\RedirectIfNotSupport::class,
         'support.guest' => \App\Http\Middleware\RedirectIfSupport::class,
-        'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\GetUserFromToken::class,
+        'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
         'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class
 
  ];

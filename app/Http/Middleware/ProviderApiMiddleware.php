@@ -4,10 +4,11 @@ namespace App\Http\Middleware;
 
 use Config;
 use Closure;
+
+use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use Tymon\JWTAuth\JWTAuth;
 
 class ProviderApiMiddleware
 {
@@ -24,7 +25,7 @@ class ProviderApiMiddleware
 
         try {
 
-            if (!$user = (new \Tymon\JWTAuth\JWTAuth)->parseToken()->authenticate()) {
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json(['user_not_found'], 404);
             } else {
                 \Auth::loginUsingId($user->id);

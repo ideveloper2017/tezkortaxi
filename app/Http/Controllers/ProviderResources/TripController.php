@@ -41,7 +41,7 @@ class TripController extends Controller
     public function index(Request $request)
     {
 
-        dd(Auth::guard('provider')->user());
+        dd(Auth::guard('provider')->check());
         try{
             if($request->ajax()) {
                 $Provider = Auth::user();

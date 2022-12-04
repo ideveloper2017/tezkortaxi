@@ -23,8 +23,8 @@ class ProviderApiMiddleware
         Config::set('auth.providers.users.model', 'App\Models\Provider');
 
         try {
-            $jwt=new JWTAuth();
-            if (!$user= $jwt->parseToken()->authenticate()) {
+
+            if (!$user = (new \Tymon\JWTAuth\JWTAuth)->parseToken()->authenticate()) {
                 return response()->json(['user_not_found'], 404);
             } else {
                 \Auth::loginUsingId($user->id);

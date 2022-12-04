@@ -48,7 +48,7 @@ class TripController extends Controller
                 $Provider = Auth::guard('provider')->user();
             }
 
-             $provider = $Provider->id;
+             $provider = $Provider?$Provider->id:0;
 
             $AfterAssignProvider = RequestFilter::with(['request.user', 'request.payment', 'request'])
                 ->where('provider_id', $provider)

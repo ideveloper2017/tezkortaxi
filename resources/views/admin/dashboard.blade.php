@@ -148,13 +148,13 @@
                            <a class="text-primary" href="{{route('admin.requests.show',$ride->id)}}"><span class="underline">Ride Details</span></a>
                            @else
                            <span>No Details Found </span>
-                           @endif                 
+                           @endif
                         </td>
                         <td>
                            <span class="text-muted">{{$ride->created_at->diffForHumans()}}</span>
                         </td>
                         <td>
-                           {{ currency($ride->payment['total'])}}
+{{--                           {{ currency($ride->payment['total'])}}--}}
                         </td>
                         <td>
                            @if($ride->status == "COMPLETED")
@@ -174,7 +174,7 @@
          </div>
       </div>
 
-	</div>	
+	</div>
 </div>
 @endsection
 
@@ -188,7 +188,7 @@
      /// echo "<pre/>";
       //print_r($js_array);die();
       echo "var last7days_rides = ". $js_array . ";\n";
-      
+
        $js_r_array = json_encode(@$last7days_rides_r);
       echo "var last7days_rides_r = ". $js_r_array . ";\n";
       ?>
@@ -198,15 +198,15 @@
       google.charts.load("visualization", "1", { packages: ["corechart"] });
       google.charts.setOnLoadCallback(DrawPieChart);
       google.charts.setOnLoadCallback(DrawPieChart1);
-   
+
      var tt = ["Element", "Density", { role: "style" } ];
       last7days_rides.unshift(tt);
       last7days_rides_r.unshift(tt);
       console.log(last7days_rides_r);
-   
+
       //console.log(last7days_rides);
       function DrawPieChart() {
-   
+
         var completed_rides ='<?php echo @$completed_rides; ?>';
         var cancel_rides    ='<?php echo @$cancel_rides; ?>';
         var ongoing_rides   ='<?php echo @$ongoing_rides; ?>';
@@ -217,29 +217,29 @@
               ['Completed', parseInt(completed_rides)],
               ['Cancel', parseInt(cancel_rides)],
               ['Ongoing', parseInt(ongoing_rides)]
-              
+
           ];
           //console.log(arrSales);
-   
+
           // SET CHART OPTIONS.
           var options = {
               title: 'Rides',
               is3D: true,
               pieSliceText: 'value-and-percentage'
           };
-   
+
           var figures = google.visualization.arrayToDataTable(arrSales);
-   
+
           // WHERE TO SHOW THE CHART (DIV ELEMENT).
          var chart = new google.visualization.PieChart(document.getElementById('total-trip-chart'));
-   
+
           // DRAW THE CHART.
           chart.draw(figures, options);
       }
-   
-   
+
+
       function DrawPieChart1() {
-   
+
         var cash_rides ='<?php echo @$cash; ?>';
         var card_rides ='<?php echo @$fleet; ?>';
         var paypal_rides ='<?php echo @$paypal; ?>';
@@ -250,33 +250,33 @@
               ['Cash', parseInt(cash_rides)],
               ['Stripe', parseInt(card_rides)],
               ['Paypal', parseInt(paypal_rides)]
-              
+
           ];
-   
+
           //console.log(arrSales);
-   
+
           // SET CHART OPTIONS.
           var options = {
               title: 'Payment Mode',
               is3D: true,
               pieSliceText: 'value-and-percentage'
           };
-   
+
           var figures = google.visualization.arrayToDataTable(arrSales);
-   
+
           // WHERE TO SHOW THE CHART (DIV ELEMENT).
          var chart = new google.visualization.PieChart(document.getElementById('payment-mode-chart'));
-   
+
           // DRAW THE CHART.
           chart.draw(figures, options);
       }
-   
+
       ////////////////// bar             ////////
    google.charts.setOnLoadCallback(drawChart);
    google.charts.setOnLoadCallback(drawChartR);
       function drawChart() {
         var data = google.visualization.arrayToDataTable(last7days_rides);
-   
+
         var view = new google.visualization.DataView(data);
         view.setColumns([0, 1,
                          { calc: "stringify",
@@ -284,7 +284,7 @@
                            type: "string",
                            role: "annotation" },
                          2]);
-   
+
         var options = {
           title: "Rides",
           width: 600,
@@ -295,12 +295,12 @@
         var chart = new google.visualization.BarChart(document.getElementById("chartContainer"));
         chart.draw(view, options);
     }
-   
-   
-   
+
+
+
     function drawChartR() {
         var data1 = google.visualization.arrayToDataTable(last7days_rides_r);
-   
+
         var view1 = new google.visualization.DataView(data1);
         view1.setColumns([0, 1,
                          { calc: "stringify",
@@ -308,7 +308,7 @@
                            type: "string",
                            role: "annotation" },
                          2]);
-   
+
         var options1 = {
           title: "Revenue",
           width: 600,
@@ -319,17 +319,17 @@
         var chart1 = new google.visualization.BarChart(document.getElementById("chartContainer_r"));
         chart1.draw(view1, options1);
     }
-   
-   
-   
-   
+
+
+
+
       ////////// ed  /////////
      /* window.onload = function () {
-      
+
     var chart = new CanvasJS.Chart("chartContainer",
        {
          title:{
-           text: ""    
+           text: ""
          },
          axisY: {
            title: "Earning"
@@ -339,39 +339,39 @@
            horizontalAlign: "center"
          },
          data: [
-     
-         {        
+
+         {
            color: "#B0D0B0",
-           type: "column",  
-           showInLegend: true, 
+           type: "column",
+           showInLegend: true,
            legendMarkerType: "none",
            legendText: "Timing",
-           dataPoints: [      
+           dataPoints: [
            { x: 1, y: 14, label: "3:00 PM"},
            { x: 2, y: 12,  label: "3:30 PM" },
            { x: 3, y: 8,  label: "4:00 PM"},
            { x: 4, y: 10,  label: "4:30 PM"},
            { x: 5, y: 7,  label: "5:00 PM"},
            { x: 6, y: 6, label: "5:30 PM"},
-           { x: 7, y: 19,  label: "6:00 PM"},        
+           { x: 7, y: 19,  label: "6:00 PM"},
            { x: 8, y: 20,  label: "6:30 PM"}
            ]
          }
          ]
        });
-     
+
        chart.render();
      }
       */
-     
-     
-     
+
+
+
      window.onload = function () {
-      
+
     var chart = new CanvasJS.Chart("chartContainer",
        {
          title:{
-           text: ""    
+           text: ""
          },
          axisY: {
            title: "Rides"
@@ -381,30 +381,30 @@
            horizontalAlign: "center"
          },
          data: [
-     
-         {        
+
+         {
            color: "#B0D0B0",
-           type: "column",  
-           showInLegend: true, 
+           type: "column",
+           showInLegend: true,
            legendMarkerType: "none",
            legendText: "Timing",
-           dataPoints: [      
+           dataPoints: [
            { x: 1, y: 14, label: "3:00 PM"},
            { x: 2, y: 12,  label: "3:30 PM" },
            { x: 3, y: 8,  label: "4:00 PM"},
            { x: 4, y: 10,  label: "4:30 PM"},
            { x: 5, y: 7,  label: "5:00 PM"},
            { x: 6, y: 6, label: "5:30 PM"},
-           { x: 7, y: 19,  label: "6:00 PM"},        
+           { x: 7, y: 19,  label: "6:00 PM"},
            { x: 8, y: 20,  label: "6:30 PM"}
            ]
          }
          ]
        });
-     
+
        chart.render();
      }
-      
-     
+
+
 </script>
 <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>@endsection

@@ -63,7 +63,7 @@ class ProviderApiMiddleware
         } catch (TokenInvalidException $e) {
             return response()->json([
                 'error' => 'Not Authorized!',
-                'statusCode' => (int)401
+                'statusCode' => $e->getFile().' '.$e->getCode()
             ], 401);
 
         } catch (JWTException $e) {

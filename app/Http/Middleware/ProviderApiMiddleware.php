@@ -21,7 +21,7 @@ class ProviderApiMiddleware
     public function handle(Request $request, Closure $next)
     {
         try {
-            $user = JWTAuth::parseToken()->authenticate();
+            $user = JWTAuth::parseToken()->authenticate(false,'provider');
             if (!$user) {
                 return response()->json(['message' => 'user not found'], 500);
             }

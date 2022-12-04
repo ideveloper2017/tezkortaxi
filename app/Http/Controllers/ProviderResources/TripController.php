@@ -98,15 +98,15 @@ class TripController extends Controller
 
             }
 
-            $Timeout = Setting::get('provider_select_timeout', 180);
-                if(!empty($IncomingRequests)){
-                    for ($i=0; $i < sizeof($IncomingRequests); $i++) {
-                        $IncomingRequests[$i]->time_left_to_respond = $Timeout - (time() - strtotime($IncomingRequests[$i]->request->assigned_at));
-                        if($IncomingRequests[$i]->request->status == 'SEARCHING' && $IncomingRequests[$i]->time_left_to_respond < 0) {
-                           $this->assign_next_provider($IncomingRequests[$i]->request->id);
-                        }
-                    }
-                }
+//            $Timeout = Setting::get('provider_select_timeout', 180);
+//                if(!empty($IncomingRequests)){
+//                    for ($i=0; $i < sizeof($IncomingRequests); $i++) {
+//                        $IncomingRequests[$i]->time_left_to_respond = $Timeout - (time() - strtotime($IncomingRequests[$i]->request->assigned_at));
+//                        if($IncomingRequests[$i]->request->status == 'SEARCHING' && $IncomingRequests[$i]->time_left_to_respond < 0) {
+//                           $this->assign_next_provider($IncomingRequests[$i]->request->id);
+//                        }
+//                    }
+//                }
 
 
             $Response = [

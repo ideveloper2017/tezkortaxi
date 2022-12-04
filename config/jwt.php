@@ -101,7 +101,7 @@ return [
     |
     */
 
-    'ttl' => env('JWT_TTL', 60),
+    'ttl' => env('JWT_TTL', 6000),
 
     /*
     |--------------------------------------------------------------------------
@@ -143,6 +143,9 @@ return [
     | present in the payload.
     |
     */
+    'user' => 'App\Models\Provider',
+
+    'identifier' => 'id',
 
     'required_claims' => [
         'iss',

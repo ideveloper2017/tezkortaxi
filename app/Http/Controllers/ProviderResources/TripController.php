@@ -70,7 +70,7 @@ class TripController extends Controller
                        $query->where('current_provider_id',$provider);
                     });
 
-            $IncomingRequests = $BeforeAssignProvider->union($AfterAssignProvider)->get();
+            $IncomingRequests = $BeforeAssignProvider->get();
             //$trips = UserRequests::where('status','COMPLETED')->where('provider_id',$provider )->count();
             $trips = UserRequests::count();
             $query = "SELECT SUM(user_request_payments.fixed + user_request_payments.distance + user_request_payments.tax ) as revenue FROM `user_requests` LEFT JOIN user_request_payments on user_requests.id=user_request_payments.request_id where provider_id=".$provider;

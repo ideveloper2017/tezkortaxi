@@ -21,7 +21,6 @@ class ProviderApiMiddleware
     public function handle(Request $request, Closure $next)
     {
 
-        dd($request->token);
 //        try {
 //            $user = JWTAuth::parseToken()->authenticate();
 //            if (!$user) {

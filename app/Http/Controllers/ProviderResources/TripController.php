@@ -238,8 +238,7 @@ class TripController extends Controller
     public function scheduled(Request $request)
     {
         try{
-            $Jobs = UserRequests::where('provider_id', Auth::user()->id)
-                    ->where('status', 'SCHEDULED')
+            $Jobs = UserRequests::where('status', 'SCHEDULED')
                     ->with('service_type')
                     ->get();
 

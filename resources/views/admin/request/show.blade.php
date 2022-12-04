@@ -15,7 +15,7 @@
                 </div>
                 <div class="col-md-5">
                     <dl class="row">
-                        
+
                         <dt class="col-sm-4">Name :</dt>
                         <dd class="col-sm-8">{{ @$request->user->first_name }}</dd>
                         <dt><hr></dt>
@@ -31,9 +31,9 @@
                         <dt class="col-sm-4">Ride Scheduled Time :</dt>
                         <dd class="col-sm-8">
                             @if($request['schedule_at'] != "0000-00-00 00:00:00")
-                                {{ date('jS \of F Y h:i:s A', strtotime($request->schedule_at)) }} 
+                                {{ date('jS \of F Y h:i:s A', strtotime($request->schedule_at)) }}
                             @else
-                                - 
+                                -
                             @endif
                         </dd>
                         <dt><hr></dt>
@@ -41,18 +41,18 @@
                         <dt class="col-sm-4">Ride Start Time :</dt>
                         <dd class="col-sm-8">
                             @if($request['started_at'] != NULL)
-                                {{ date('jS \of F Y h:i:s A', strtotime($request->created_at)) }} 
+                                {{ date('jS \of F Y h:i:s A', strtotime($request->created_at)) }}
                             @else
-                                - 
+                                -
                             @endif
                          </dd>
                          <dt><hr></dt>
                         <dt class="col-sm-4">Ride End Time :</dt>
                         <dd class="col-sm-8">
-                            @if($request['finished_at'] != NULL) 
+                            @if($request['finished_at'] != NULL)
                                 {{ date('jS \of F Y h:i:s A', strtotime($request->finished_at)) }}
                             @else
-                                - 
+                                -
                             @endif
                         </dd>
                         <dt><hr></dt>
@@ -68,7 +68,9 @@
                         <dd class="col-sm-8">{{ @$request['distance'] ? round($request->distance) : '-' }} KM</dd>
                         <dt><hr></dt>
                         <dt class="col-sm-4">Distance Price :</dt>
-                        <dd class="col-sm-8">{{ currency($request['payment']['distance']) }}</dd>
+                        <dd class="col-sm-8">
+{{--                            {{ currency($request['payment']['distance']) }}--}}
+                        </dd>
                         <dt><hr></dt>
                         @if($request->payment)
                         <dt class="col-sm-4">Base Price :</dt>
@@ -78,7 +80,7 @@
                         <dd class="col-sm-8">{{ currency($request['payment']['tax']) }}</dd>
                         <dt><hr></dt>
                         <dt class="col-sm-4">Total Amount :</dt>
-                        <dd class="col-sm-8">{{ currency($request['payment']['total']) }}</dd>                        
+                        <dd class="col-sm-8">{{ currency($request['payment']['total']) }}</dd>
                         <dt><hr></dt>
                         @endif
 
@@ -89,8 +91,8 @@
                         @if(!empty($promocode['promocode']))
                         <dt class="col-sm-12"></dt>
                         <dt class="col-sm-12"><h4>Promocode </h4></dt>
-                        
-                        
+
+
                         <dt class="col-sm-4">Promo Code : </dt>
                         <dd class="col-sm-8">
                             {{$promocode['promocode']['promo_code']}}
@@ -101,17 +103,17 @@
                         </dd>
                         <dt class="col-sm-4">Applied Date :</dt>
                         <dd class="col-sm-8">
-                            @if($promocode['created_at'] != "0000-00-00 00:00:00") 
+                            @if($promocode['created_at'] != "0000-00-00 00:00:00")
                                 {{ date('jS \of F Y h:i:s A', strtotime($promocode->created_at)) }}
                             @else
-                                - 
+                                -
                             @endif
                         </dd>
                         @endif
                        <dt><hr></dt>
                     </dl>
                 </div>
-                
+
             </div>
         </div>
     </div>

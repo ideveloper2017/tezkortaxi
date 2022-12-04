@@ -5,7 +5,7 @@ namespace App\Http\Controllers\ProviderResources;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Setting;
 use Carbon\Carbon;
 use App\Helpers\Helper;
@@ -92,8 +92,7 @@ class TripController extends Controller
                 ]);
                 ProviderZone::updateOrCreate(['driver_id'=>$provider],
                     [ 'driver_id' => $provider,
-                      'zone_id' =>  $zone_id
-                    ]
+                      'zone_id' =>  $zone_id]
                 );
 
             }

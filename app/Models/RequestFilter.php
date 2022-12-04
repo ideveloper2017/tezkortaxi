@@ -29,6 +29,6 @@ class RequestFilter extends Model
      */
     public function request()
     {
-        return $this->belongsTo('App\UserRequests');
+        return $this->belongsTo('App\Models\UserRequests');
     }
 }

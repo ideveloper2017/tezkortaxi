@@ -87,7 +87,7 @@ return [
         ],
 
         'providerapi' => [
-            'driver' => 'jwt',
+            'driver' => 'passport',
             'provider' => 'providers',
         ],
     ],

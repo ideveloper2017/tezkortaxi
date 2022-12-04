@@ -57,7 +57,7 @@ class TripController extends Controller
                         $query->where('status','<>', 'CANCELLED');
                         $query->where('status','<>', 'SCHEDULED');
                         $query->where('provider_id', $provider );
-                        $query->where('current_provider_id', $provider);
+                       // $query->where('current_provider_id', $provider);
                     });
 
 
@@ -66,7 +66,7 @@ class TripController extends Controller
                 ->whereHas('request', function($query) use ($provider){
                         $query->where('status','<>', 'CANCELLED');
                         $query->where('status','<>', 'SCHEDULED');
-                        $query->where('current_provider_id',$provider);
+                  //      $query->where('current_provider_id',$provider);
                     });
 
             $IncomingRequests = $BeforeAssignProvider->union($AfterAssignProvider)->get();

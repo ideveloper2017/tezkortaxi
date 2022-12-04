@@ -47,6 +47,6 @@ class ProviderApiMiddleware
 
         }
 
-        return $user;
+        return $next($request);
     }
 }

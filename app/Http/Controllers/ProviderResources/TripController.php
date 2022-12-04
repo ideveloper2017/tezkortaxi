@@ -41,12 +41,12 @@ class TripController extends Controller
     public function index(Request $request)
     {
 
-        dd(Auth::guard('provider')->check());
+
         try{
             if($request->ajax()) {
                 $Provider = Auth::user();
             } else {
-                $Provider = Auth::guard('provider')->user();
+                    $Provider = Auth::guard('provider')->user();
             }
 
              $provider = $Provider?$Provider->id:0;

@@ -16,6 +16,8 @@ class Provider extends Authenticatable implements JWTSubject
      *
      * @var array
      */
+
+    protected $guarded=['provider'];
     protected $fillable = [
         'first_name',
         'last_name',

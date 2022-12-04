@@ -27,7 +27,7 @@ Route::post('document/upload', 'ProviderResources\DocumentController@updateDocum
 //Route::post('invoicebackupdata', 'ProviderResources\TripController@invoicebackup');
 
 
-Route::group(function () {
+//Route::group(['middleware' => ['provider.api']], function () {
     Route::post('/invoicebackupdata', 'ProviderResources\TripController@invoicebackup');
     Route::post('/review' , 'ProviderResources\TripController@review');
     //Get Notification
@@ -94,4 +94,4 @@ Route::group(function () {
     Route::get('document/types', 'ProviderResources\DocumentController@getDocumentTypes');
 	Route::get('/test', 'ProviderResources\TripController@test');
 
-});
+//});

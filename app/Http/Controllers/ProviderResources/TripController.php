@@ -87,11 +87,13 @@ class TripController extends Controller
                 $point[1] = $request->longitude;
                 $zone_id =	$this->getLatlngZone_id($point);
 
-                $Provider->update([
+                if ($Provider) {
+                    $Provider->update([
                         'latitude' => $request->latitude,
                         'longitude' => $request->longitude,
-                        'zone_id' =>  $zone_id
-                ]);
+                        'zone_id' => $zone_id
+                    ]);
+                }
                 ProviderZone::updateOrCreate(['driver_id'=>$provider],
                     [ 'driver_id' => $provider,
                       'zone_id' =>  $zone_id]

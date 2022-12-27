@@ -46,10 +46,10 @@ class TripController extends Controller
             if($request->ajax()) {
                 $Provider = Auth::user();
             } else {
-                    $Provider = Auth::guard('provider')->user();
+                    $Provider = Auth::user();
             }
 
-            dd(Auth::user());
+            //dd(Auth::user());
              $provider = $Provider?$Provider->id:0;
 //             $provider = 0;
 

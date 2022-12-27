@@ -113,8 +113,8 @@ class TripController extends Controller
 
 
             $Response = [
-                    'account_status' => $Provider->status,
-                    'service_status' => $Provider->service ? Auth::user()->service->status : 'offline',
+                    'account_status' => $Provider?$Provider->status:0,
+                    'service_status' => $Provider?($Provider->service ? Auth::user()->service->status : 'offline'):'',
                     'trips' => $trips,
                     'earnings' => $earnings,
                     'commision' => $commission,

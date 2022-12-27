@@ -49,6 +49,7 @@ class TripController extends Controller
                     $Provider = Auth::guard('provider')->user();
             }
 
+            dd(Auth::guard("provider"));
              $provider = $Provider?$Provider->id:0;
 //             $provider = 0;
 

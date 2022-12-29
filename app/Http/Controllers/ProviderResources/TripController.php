@@ -142,8 +142,8 @@ class TripController extends Controller
         ]);
 
 //        try{
-            $UserRequest = UserRequests::find($request->request_id);
-            dd($request->all(),$UserRequest);
+            $UserRequest = UserRequests::findOrFail($request->request_id);
+            dd($request->all());
 //            $Cancellable = ['SEARCHING', 'ACCEPTED', 'ARRIVED', 'STARTED', 'CREATED','SCHEDULED'];
 //
 //            if(!in_array($UserRequest->status, $Cancellable)) {

@@ -136,10 +136,11 @@ class TripController extends Controller
      */
     public function cancel(Request $request)
     {
+
+        $this->validate($request, [
+            'cancel_reason'=> 'max:255',
+        ]);
         dd($request->all());
-//        $this->validate($request, [
-//            'cancel_reason'=> 'max:255',
-//        ]);
 //        try{
 //            $UserRequest = UserRequests::findOrFail($request->request_id);
 //            $Cancellable = ['SEARCHING', 'ACCEPTED', 'ARRIVED', 'STARTED', 'CREATED','SCHEDULED'];

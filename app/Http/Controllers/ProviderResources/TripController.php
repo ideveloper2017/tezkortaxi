@@ -157,7 +157,7 @@ class TripController extends Controller
             ProviderService::where('provider_id',$UserRequest->provider_id)->update(['status' =>'active']);
 
              // Send Push Notification to User
-            (new SendPushNotification)->ProviderCancellRide($UserRequest);
+         //   (new SendPushNotification)->ProviderCancellRide($UserRequest);
 
             return $UserRequest;
 

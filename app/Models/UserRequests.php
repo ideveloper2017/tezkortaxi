@@ -88,7 +88,7 @@ class UserRequests extends Model
      */
     public function payment()
     {
-        return $this->hasOne('App\Models\UserRequestPayment', 'request_id');
+        return $this->hasOne(UserRequestPayment::class, 'request_id');
     }
 
     public function card()
@@ -101,7 +101,7 @@ class UserRequests extends Model
      */
     public function rating()
     {
-        return $this->hasOne('App\Models\UserRequestRating', 'request_id');
+        return $this->hasOne(UserRequestRating::class, 'request_id');
     }
 
     /**
@@ -109,7 +109,7 @@ class UserRequests extends Model
      */
     public function filter()
     {
-        return $this->hasMany('App\Models\RequestFilter', 'request_id');
+        return $this->hasMany(RequestFilter::class, 'request_id');
     }
 
     /**

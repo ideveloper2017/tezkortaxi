@@ -136,32 +136,32 @@ class TripController extends Controller
      */
     public function cancel(Request $request)
     {
-        $this->validate($request, [
-            'cancel_reason'=> 'max:255',
-        ]);
+        dd($request->all());
+//        $this->validate($request, [
+//            'cancel_reason'=> 'max:255',
+//        ]);
 //        try{
-            $UserRequest = UserRequests::findOrFail($request->request_id);
-            $Cancellable = ['SEARCHING', 'ACCEPTED', 'ARRIVED', 'STARTED', 'CREATED','SCHEDULED'];
-
-
-            if(!in_array($UserRequest->status, $Cancellable)) {
-                return back()->with(['flash_error' => 'Cannot cancel request at this stage!']);
-            }
-
-            $UserRequest->status = "CANCELLED";
-            $UserRequest->cancel_reason = $request->cancel_reason;
-            $UserRequest->cancelled_by = "PROVIDER";
-            $UserRequest->save();
-
-            RequestFilter::where('request_id', $UserRequest->id)->delete();
-
-            ProviderService::where('provider_id',$UserRequest->provider_id)->update(['status' =>'active']);
-           dd($UserRequest);
-             // Send Push Notification to User
-         //   (new SendPushNotification)->ProviderCancellRide($UserRequest);
-
-          //  return $UserRequest;
-
+//            $UserRequest = UserRequests::findOrFail($request->request_id);
+//            $Cancellable = ['SEARCHING', 'ACCEPTED', 'ARRIVED', 'STARTED', 'CREATED','SCHEDULED'];
+//
+//            if(!in_array($UserRequest->status, $Cancellable)) {
+//                return back()->with(['flash_error' => 'Cannot cancel request at this stage!']);
+//            }
+//
+//            $UserRequest->status = "CANCELLED";
+//            $UserRequest->cancel_reason = $request->cancel_reason;
+//            $UserRequest->cancelled_by = "PROVIDER";
+//            $UserRequest->save();
+//
+//            RequestFilter::where('request_id', $UserRequest->id)->delete();
+//
+//            ProviderService::where('provider_id',$UserRequest->provider_id)->update(['status' =>'active']);
+//
+//             // Send Push Notification to User
+//            (new SendPushNotification)->ProviderCancellRide($UserRequest);
+//
+//            return $UserRequest;
+//
 //        } catch (ModelNotFoundException $e) {
 //            return response()->json(['error' => 'Something went wrong']);
 //        }

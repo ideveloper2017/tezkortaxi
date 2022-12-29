@@ -25,7 +25,6 @@ class ProviderApiMiddleware
 
         try {
             $user = JWTAuth::parseToken()->authenticate();
-            Auth::setUser($user);
             if (!$user) {
                 return response()->json(['user_not_found'], 404);
             } else {

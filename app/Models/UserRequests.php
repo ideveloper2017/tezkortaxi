@@ -14,6 +14,7 @@ class UserRequests extends Model
      *
      * @var array
      */
+    protected $primaryKey="id";
     protected $fillable = [
         'provider_id',
         'user_id',

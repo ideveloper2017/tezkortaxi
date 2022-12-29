@@ -162,7 +162,7 @@ class TripController extends Controller
             return $UserRequest;
 
         } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Something went wrong']);
+            return response()->json(['error' => 'Something went wrong'.$e->getMessage()]);
         }
 
 

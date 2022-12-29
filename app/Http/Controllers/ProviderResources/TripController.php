@@ -143,7 +143,7 @@ class TripController extends Controller
             $UserRequest = UserRequests::findOrFail($request->request_id);
             $Cancellable = ['SEARCHING', 'ACCEPTED', 'ARRIVED', 'STARTED', 'CREATED','SCHEDULED'];
 
-            dd($UserRequest);
+
             if(!in_array($UserRequest->status, $Cancellable)) {
                 return back()->with(['flash_error' => 'Cannot cancel request at this stage!']);
             }
@@ -156,7 +156,7 @@ class TripController extends Controller
             RequestFilter::where('request_id', $UserRequest->id)->delete();
 
             ProviderService::where('provider_id',$UserRequest->provider_id)->update(['status' =>'active']);
-
+           dd($UserRequest);
              // Send Push Notification to User
          //   (new SendPushNotification)->ProviderCancellRide($UserRequest);
 

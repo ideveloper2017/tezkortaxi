@@ -65,6 +65,16 @@ class UserRequests extends Model
         'finished_at',
     ];
 
+    protected $casts = [
+        'created_at'     => 'date',
+        'updated_at'     => 'date',
+        'deleted_at'     => 'date',
+        'assigned_at'     => 'date',
+        'schedule_at'     => 'date',
+        'started_at'     => 'date',
+        'finished_at'     => 'date',
+    ];
+
     /**
      * ServiceType Model Linked
      */

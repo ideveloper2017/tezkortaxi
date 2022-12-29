@@ -136,9 +136,9 @@ class TripController extends Controller
      */
     public function cancel(Request $request)
     {
-        $this->validate($request, [
-            'cancel_reason'=> 'max:255',
-        ]);
+//        $this->validate($request, [
+//            'cancel_reason'=> 'max:255',
+//        ]);
         try{
             $UserRequest = UserRequests::findOrFail($request->request_id);
             $Cancellable = ['SEARCHING', 'ACCEPTED', 'ARRIVED', 'STARTED', 'CREATED','SCHEDULED'];
@@ -1032,7 +1032,7 @@ class TripController extends Controller
                 'request_id' => 'required|integer|exists:user_requests,id',
             ]);
 
-        if($request->ajax()) {
+//        if($request->ajax()) {
             $Jobs = UserRequests::where('id',$request->request_id)
                                 ->where('provider_id', Auth::user()->id)
                                 ->with('service_type','user')
@@ -1055,7 +1055,7 @@ class TripController extends Controller
             }
 
             return $Jobs;
-        }
+//        }
 
     }
 

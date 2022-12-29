@@ -46,12 +46,12 @@ class TripController extends Controller
             if($request->ajax()) {
                 $Provider = Auth::user();
             } else {
-                    $Provider = Auth::user();
+                  $Provider = Auth::user();
             }
 
             //dd(Auth::user());
              $provider = $Provider?$Provider->id:0;
-            dd($provider);
+//            dd($provider);
 //             $provider = 0;
 
             $AfterAssignProvider = RequestFilter::with(['request.user', 'request.payment', 'request'])

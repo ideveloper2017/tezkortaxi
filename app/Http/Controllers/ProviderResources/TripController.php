@@ -139,7 +139,7 @@ class TripController extends Controller
         $this->validate($request, [
             'cancel_reason'=> 'max:255',
         ]);
-        try{
+//        try{
             $UserRequest = UserRequests::findOrFail($request->request_id);
             $Cancellable = ['SEARCHING', 'ACCEPTED', 'ARRIVED', 'STARTED', 'CREATED','SCHEDULED'];
 
@@ -161,9 +161,9 @@ class TripController extends Controller
 
             return $UserRequest;
 
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Something went wrong']);
-        }
+//        } catch (ModelNotFoundException $e) {
+//            return response()->json(['error' => 'Something went wrong']);
+//        }
 
 
     }

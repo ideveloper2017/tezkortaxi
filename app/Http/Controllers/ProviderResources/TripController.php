@@ -140,9 +140,10 @@ class TripController extends Controller
         $this->validate($request, [
             'cancel_reason'=> 'max:255',
         ]);
-        dd($request->all());
+
 //        try{
-//            $UserRequest = UserRequests::findOrFail($request->request_id);
+            $UserRequest = UserRequests::findOrFail($request->request_id);
+            dd($request->all(), $UserRequest);
 //            $Cancellable = ['SEARCHING', 'ACCEPTED', 'ARRIVED', 'STARTED', 'CREATED','SCHEDULED'];
 //
 //            if(!in_array($UserRequest->status, $Cancellable)) {

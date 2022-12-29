@@ -330,7 +330,7 @@ class TripController extends Controller
             }
             return $Jobs;
         }
-        $Jobs = UserRequests::where('provider_id', Auth::guard('provider')->user()->id)->with('user', 'service_type', 'payment', 'rating')->get();
+        $Jobs = UserRequests::where('provider_id', Auth::user()->id)->with('user', 'service_type', 'payment', 'rating')->get();
         return view('provider.trip.index', compact('Jobs'));
     }
 

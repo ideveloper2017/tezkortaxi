@@ -10,10 +10,10 @@ use Setting;
 use Exception;
 use App\Helpers\Helper;
 
-use App\ServiceType;
-use App\Blog;
-use App\BankAccount;
-use App\WithdrawalMoney;
+use App\Models\ServiceType;
+use App\Models\Blog;
+use App\Models\BankAccount;
+use App\Models\WithdrawalMoney;
 
 class BankResource extends Controller
 {
@@ -35,21 +35,21 @@ class BankResource extends Controller
 
     public function approved_account(Request $request)
     {
-        
+
         if($request->ajax()) {
 
            return BankAccount::where('id',$request->id)->update(['status'=>'APPROVED']);
            return back()->with('flash_success','Approved created Successfully');
-    
+
         }
         else{
-            
+
         $bank = BankAccount::where('status','APPROVED')->get();
-        
+
             return view('admin.bank.approved_account', compact('bank'));
 
         }
-        
+
     }
 
 
@@ -84,7 +84,7 @@ class BankResource extends Controller
       public function new_withdraw(Request $request)
     {
         $bank = WithdrawalMoney::where('status','WAITING')->get();
-       
+
 
         if($request->ajax()) {
 
@@ -103,12 +103,12 @@ class BankResource extends Controller
        $arr[0]['withdrawId'] = $withdraw->id;
 
        return $arr;
-            
+
         } else {
             return view('admin.bank.new_withdraw', compact('bank'));
         }
-            
-        
+
+
     }
 
 
@@ -180,7 +180,7 @@ class BankResource extends Controller
      */
     public function edit($id)
     {
-        
+
         try {
             $service = BankAccount::findOrFail($id);
             return view('admin.bank.edit',compact('service'));
@@ -201,13 +201,13 @@ class BankResource extends Controller
         if(Setting::get('demo_mode', 0) == 1) {
             return back()->with('flash_error','Disabled for demo purposes! Please contact us at info@rommoz.com');
         }
-        
+
         /*$this->validate($request, [
             'account_name' => 'required|max:255',
             'bank_name' => 'required',
             'account_number' => 'required|numeric|max:20',
             'routing_number' => 'required|numeric|max:20',
-			
+
         ]);*/
 
         try {
@@ -221,8 +221,8 @@ class BankResource extends Controller
             $service->country = $request->country;
             $service->save();
 
-            return redirect('admin/approved_account')->with('flash_success', 'Account Updated Successfully');    
-        } 
+            return redirect('admin/approved_account')->with('flash_success', 'Account Updated Successfully');
+        }
 
         catch (ModelNotFoundException $e) {
             return back()->with('flash_error', 'Account  Not Found');
@@ -240,7 +240,7 @@ class BankResource extends Controller
         if(Setting::get('demo_mode', 0) == 1) {
             return back()->with('flash_error','Disabled for demo purposes! Please contact us at info@rommoz.com');
         }
-        
+
         try {
             BankAccount::find($id)->delete();
             return back()->with('message', 'Account deleted successfully');

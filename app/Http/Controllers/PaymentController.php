@@ -12,11 +12,11 @@ use Razorpay\Api\Api;
 use Auth;
 use Setting;
 use Exception;
-use App\BankAccount;
-use App\Card;
-use App\User;
-use App\UserRequests;
-use App\UserRequestPayment;
+use App\Models\BankAccount;
+use App\Models\Card;
+use App\Models\User;
+use App\Models\UserRequests;
+use App\Models\UserRequestPayment;
 //paypal
 use PayPal\Api\Amount;
 use PayPal\Api\Details;

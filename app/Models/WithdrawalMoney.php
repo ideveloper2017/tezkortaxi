@@ -10,6 +10,7 @@ class WithdrawalMoney extends Authenticatable
 {
     use HasApiTokens,Notifiable;
 
+    protected $table='withdrawal_moneys';
     /**
      * The attributes that are mass assignable.
      *
